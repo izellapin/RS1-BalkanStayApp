@@ -1,8 +1,25 @@
 <div class="profile-container">
   <div class="sidebar">
-    <div class="profile-picture">
-      <img src="assets/default-avatar.png" alt="Profile Picture">
-    </div>
+    <!-- Profile Image Section -->
+    <div class="profile-image-section">
+        <div class="image-container">
+          <img [src]="profileImageUrl" 
+               alt="Profile Picture"
+               class="profile-image"
+               (error)="profileImageUrl = 'assets/default-avatar.png'">
+        </div>
+        <div class="upload-button">
+          <label for="profile-upload" class="upload-label">
+            <i class="fas fa-camera"></i> Change Photo
+          </label>
+          <input 
+            type="file" 
+            id="profile-upload" 
+            (change)="onImageSelected($event)" 
+            accept="image/*" 
+            hidden>
+        </div>
+      </div>
     <nav class="vertical-menu">
       <a (click)="selectMenuItem('Edit Profile')" [class.active]="selectedMenuItem === 'Edit Profile'" class="menu-item">
         <i class="fas fa-user"></i>
@@ -31,26 +48,6 @@
       <h2 class="page-title">Edit Profile</h2>
 
       <div class="profile-form">
-        <!-- Profile Image Section -->
-        <div class="profile-image-section">
-          <div class="image-container">
-            <img [src]="profileImageUrl" 
-                 alt="Profile Picture"
-                 class="profile-image"
-                 (error)="profileImageUrl = 'assets/default-avatar.png'">
-          </div>
-          <div class="upload-button">
-            <label for="profile-upload" class="upload-label">
-              <i class="fas fa-camera"></i> Change Photo
-            </label>
-            <input 
-              type="file" 
-              id="profile-upload" 
-              (change)="onImageSelected($event)" 
-              accept="image/*" 
-              hidden>
-          </div>
-        </div>
 
         <!-- Form Section -->
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="form-container">
