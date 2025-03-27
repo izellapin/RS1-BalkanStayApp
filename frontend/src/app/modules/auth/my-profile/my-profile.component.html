@@ -1,0 +1,91 @@
+<div class="profile-container">
+  <!-- Left Sidebar -->
+  <div class="profile-sidebar">
+    <!-- User Info -->
+    <div class="user-info">
+      <div class="profile-image">
+        <img [src]="currentUser?.image || 'assets/images/default-avatar.png'" alt="Profile Picture">
+      </div>
+      <div class="user-details">
+        <h3>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h3>
+        <p>{{ currentUser?.email }}</p>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="nav-menu">
+      <!-- Profile Section -->
+      <div class="menu-section">
+        <a [class.active]="activeSection === 'profile'" (click)="setActiveSection('profile')">
+          <i class="fas fa-user"></i>
+          Edit Profile
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+      </div>
+
+      <!-- Bookings Section -->
+      <div class="menu-section">
+        <a [class.active]="activeSection === 'bookings'" (click)="setActiveSection('bookings')">
+          <i class="fas fa-suitcase"></i>
+          My Travels
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+
+        <a [class.active]="activeSection === 'favorites'" (click)="setActiveSection('favorites')">
+          <i class="fas fa-heart"></i>
+          Favorites
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+
+        <a [class.active]="activeSection === 'reviews'" (click)="setActiveSection('reviews')">
+          <i class="fas fa-star"></i>
+          My Reviews
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+      </div>
+
+      <!-- Settings Section -->
+      <div class="menu-section">
+        <a [class.active]="activeSection === 'settings'" (click)="setActiveSection('settings')">
+          <i class="fas fa-cog"></i>
+          Settings
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+      </div>
+
+      <!-- System Section -->
+      <div class="menu-section">
+        <a [class.active]="activeSection === 'clear-cache'" (click)="setActiveSection('clear-cache')">
+          <i class="fas fa-trash"></i>
+          Clear Cache
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+        
+        <a [class.active]="activeSection === 'clear-history'" (click)="setActiveSection('clear-history')">
+          <i class="fas fa-history"></i>
+          Clear History
+          <i class="fas fa-chevron-right arrow"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Content Area -->
+  <div class="content-area">
+    <ng-container [ngSwitch]="activeSection">
+      <app-edit-profile *ngSwitchCase="'profile'"></app-edit-profile>
+      <app-my-bookings *ngSwitchCase="'bookings'"></app-my-bookings>
+      <app-favorites *ngSwitchCase="'favorites'"></app-favorites>
+      <app-my-reviews *ngSwitchCase="'reviews'"></app-my-reviews>
+      <app-settings *ngSwitchCase="'settings'"></app-settings>
+      <div *ngSwitchCase="'clear-cache'" class="section-content">
+        <h2>Clear Cache</h2>
+        <p>Clear cache functionality will be implemented here.</p>
+      </div>
+      <div *ngSwitchCase="'clear-history'" class="section-content">
+        <h2>Clear History</h2>
+        <p>Clear history functionality will be implemented here.</p>
+      </div>
+    </ng-container>
+  </div>
+</div> 

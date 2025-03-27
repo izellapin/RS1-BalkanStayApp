@@ -16,6 +16,7 @@ import {MatButton, MatButtonModule} from '@angular/material/button';
 import {MatSlideToggle, MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import {SharedModule} from '../shared/shared.module';
+import { MyProfileComponent } from './my-profile/my-profile.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {SharedModule} from '../shared/shared.module';
     TwoFactorComponent,
     AuthLayoutComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    MyProfileComponent
   ],
   imports: [
     CommonModule,

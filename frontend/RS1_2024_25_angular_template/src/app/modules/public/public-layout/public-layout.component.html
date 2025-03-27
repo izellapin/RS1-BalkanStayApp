@@ -35,16 +35,14 @@
       </div>
     </div>
 
-    <!-- Show greeting message with dropdown if the user IS logged in -->
     <div *ngIf="isLoggedIn()" class="dropdown">
-      <!-- Dropdown Button (Styled like Login/Register buttons) -->
       <div class="user-profile dropdown-button" (click)="toggleDropdown()">
         <span>Hi, {{ authInfo?.firstName }}</span>
       </div>
 
       <!-- Dropdown Menu -->
       <div class="dropdown-menu" *ngIf="dropdownOpen">
-        <button routerLink="/profile">
+        <button routerLink="/auth/my-profile">
           <mat-icon>person</mat-icon> My Profile
         </button>
         <button (click)="logout()">

@@ -7,6 +7,7 @@ import { LogoutComponent } from './logout/logout.component';
 import {ForgotPasswordComponent} from './forgot-password/forgot-password.component';
 import {RegisterComponent} from './register/register.component';
 import {ResetPasswordComponent} from './reset-password/reset-password.component';
+import {MyProfileComponent} from './my-profile/my-profile.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
       { path: 'two-factor', component: TwoFactorComponent },
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
+      { path: 'my-profile', component: MyProfileComponent },
     ]
   },
 ];

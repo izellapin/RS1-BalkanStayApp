@@ -32,7 +32,6 @@ import { HeaderComponent } from './header/header.component';
     MyPageProgressbarComponent,
     FooterComponent,
     HeaderComponent
-
   ],
   imports: [
     CommonModule,

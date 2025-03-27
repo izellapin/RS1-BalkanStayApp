@@ -1,0 +1,47 @@
+<div class="edit-profile">
+  <h2>Edit Profile</h2>
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" formControlName="firstName" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" formControlName="lastName" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" formControlName="email" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" formControlName="phone" class="form-control">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="cityID">City</label>
+        <select id="cityID" formControlName="cityID" class="form-control">
+          <!-- Add your city options here -->
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="genderID">Gender</label>
+        <select id="genderID" formControlName="genderID" class="form-control">
+          <!-- Add your gender options here -->
+        </select>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || loading">
+      <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+      Save Changes
+    </button>
+  </form>
+</div> 
