@@ -1,15 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using RS1_2024_25.API.Data.Models;
+
 
 namespace RS1_2024_25.API.Data
 {
-//    public class Image
-//    {
-//        public int ImageID { get; set; }
-//        public byte[] Photo { get; set; }
-
-//        public List<ApartmentImage> ApartmentImages { get; set; }
-
-//    }
 
     public class Image
     {
@@ -18,6 +12,12 @@ namespace RS1_2024_25.API.Data
 
         [JsonIgnore]
         public List<ApartmentImage> ApartmentImages { get; set; }
+        
+        [JsonIgnore]
+        public List<UserImage> UserImages { get; set; }
+        
+        [JsonIgnore]
+        public List<OwnerImage> OwnerImages { get; set; }
     }
 
 

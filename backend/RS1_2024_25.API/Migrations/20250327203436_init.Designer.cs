@@ -12,7 +12,7 @@ using RS1_2024_25.API.Data;
 namespace RS1_2024_25.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250320154543_init")]
+    [Migration("20250327203436_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -1062,10 +1062,20 @@ namespace RS1_2024_25.API.Migrations
                         {
                             ImageID = 5,
                             ImagePath = "/images/image2.jpg"
+                        },
+                        new
+                        {
+                            ImageID = 6,
+                            ImagePath = "/images/male.png"
+                        },
+                        new
+                        {
+                            ImageID = 7,
+                            ImagePath = "/images/female.png"
                         });
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.Account", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Account", b =>
                 {
                     b.Property<int>("AccountID")
                         .ValueGeneratedOnAdd()
@@ -1441,6 +1451,98 @@ namespace RS1_2024_25.API.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.OwnerImage", b =>
+                {
+                    b.Property<int>("OwnerImageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OwnerImageID"));
+
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageID")
+                        .HasColumnType("int");
+
+                    b.HasKey("OwnerImageID");
+
+                    b.HasIndex("AccountID");
+
+                    b.HasIndex("ImageID");
+
+                    b.ToTable("OwnerImages");
+
+                    b.HasData(
+                        new
+                        {
+                            OwnerImageID = 1,
+                            AccountID = 9,
+                            ImageID = 6
+                        },
+                        new
+                        {
+                            OwnerImageID = 2,
+                            AccountID = 10,
+                            ImageID = 6
+                        },
+                        new
+                        {
+                            OwnerImageID = 3,
+                            AccountID = 11,
+                            ImageID = 7
+                        });
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.UserImage", b =>
+                {
+                    b.Property<int>("UserImageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserImageID"));
+
+                    b.Property<int>("AccountID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserImageID");
+
+                    b.HasIndex("AccountID");
+
+                    b.HasIndex("ImageID");
+
+                    b.ToTable("UserImages");
+
+                    b.HasData(
+                        new
+                        {
+                            UserImageID = 1,
+                            AccountID = 5,
+                            ImageID = 7
+                        },
+                        new
+                        {
+                            UserImageID = 2,
+                            AccountID = 6,
+                            ImageID = 7
+                        },
+                        new
+                        {
+                            UserImageID = 3,
+                            AccountID = 7,
+                            ImageID = 6
+                        },
+                        new
+                        {
+                            UserImageID = 4,
+                            AccountID = 8,
+                            ImageID = 6
+                        });
+                });
+
             modelBuilder.Entity("RS1_2024_25.API.Data.OwnerReview", b =>
                 {
                     b.Property<int>("OwnerReviewID")
@@ -1630,7 +1732,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.Administrator", b =>
                 {
-                    b.HasBaseType("RS1_2024_25.API.Data.Models.Auth.Account");
+                    b.HasBaseType("RS1_2024_25.API.Data.Models.Account");
 
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
@@ -1676,9 +1778,9 @@ namespace RS1_2024_25.API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.User", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.User", b =>
                 {
-                    b.HasBaseType("RS1_2024_25.API.Data.Models.Auth.Account");
+                    b.HasBaseType("RS1_2024_25.API.Data.Models.Account");
 
                     b.Property<int>("CityID")
                         .HasColumnType("int");
@@ -1688,9 +1790,6 @@ namespace RS1_2024_25.API.Migrations
 
                     b.Property<int>("GenderID")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("Image")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -1712,7 +1811,7 @@ namespace RS1_2024_25.API.Migrations
                             Password = "JohnPass",
                             Username = "johndoe",
                             CityID = 1,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3045),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6245),
                             GenderID = 1,
                             Phone = "+38761000111"
                         },
@@ -1725,7 +1824,7 @@ namespace RS1_2024_25.API.Migrations
                             Password = "JanePass",
                             Username = "janedoe",
                             CityID = 2,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3387),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6428),
                             GenderID = 2,
                             Phone = "+38761000222"
                         },
@@ -1738,7 +1837,7 @@ namespace RS1_2024_25.API.Migrations
                             Password = "xxxxx",
                             Username = "xxxxx",
                             CityID = 3,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3390),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6430),
                             GenderID = 1,
                             Phone = "+38761000222"
                         },
@@ -1751,7 +1850,7 @@ namespace RS1_2024_25.API.Migrations
                             Password = "YYYXX",
                             Username = "yyyy",
                             CityID = 4,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3393),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6432),
                             GenderID = 2,
                             Phone = "+38761000222"
                         });
@@ -1759,7 +1858,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Owner", b =>
                 {
-                    b.HasBaseType("RS1_2024_25.API.Data.Models.Auth.Account");
+                    b.HasBaseType("RS1_2024_25.API.Data.Models.Account");
 
                     b.Property<int>("CityID")
                         .HasColumnType("int");
@@ -1769,9 +1868,6 @@ namespace RS1_2024_25.API.Migrations
 
                     b.Property<int>("GenderID")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("Image")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -1793,9 +1889,8 @@ namespace RS1_2024_25.API.Migrations
                             Password = "Izel",
                             Username = "Izel",
                             CityID = 1,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(4882),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7189),
                             GenderID = 2,
-                            Image = new byte[0],
                             Phone = "061-000-111"
                         },
                         new
@@ -1807,9 +1902,8 @@ namespace RS1_2024_25.API.Migrations
                             Password = "Maida",
                             Username = "Maida",
                             CityID = 2,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(5115),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7343),
                             GenderID = 2,
-                            Image = new byte[0],
                             Phone = "061-000-222"
                         },
                         new
@@ -1821,9 +1915,8 @@ namespace RS1_2024_25.API.Migrations
                             Password = "Admin",
                             Username = "Admin",
                             CityID = 3,
-                            CreatedAt = new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(5118),
+                            CreatedAt = new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7345),
                             GenderID = 1,
-                            Image = new byte[0],
                             Phone = "061-000-333"
                         });
                 });
@@ -1923,7 +2016,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Favorite", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", "Account")
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountID")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1935,7 +2028,7 @@ namespace RS1_2024_25.API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.User", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany("Favorites")
                         .HasForeignKey("UserAccountID")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -1947,7 +2040,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.MyAuthenticationToken", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", "Account")
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1958,7 +2051,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.TwoFactorAuth", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", "Account")
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", "Account")
                         .WithOne("TwoFactorAuth")
                         .HasForeignKey("RS1_2024_25.API.Data.Models.Auth.TwoFactorAuth", "AccountId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1978,6 +2071,44 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.OwnerImage", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Owner", "Owner")
+                        .WithMany("OwnerImages")
+                        .HasForeignKey("AccountID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Image", "Image")
+                        .WithMany("OwnerImages")
+                        .HasForeignKey("ImageID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.UserImage", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany("UserImages")
+                        .HasForeignKey("AccountID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Image", "Image")
+                        .WithMany("UserImages")
+                        .HasForeignKey("ImageID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RS1_2024_25.API.Data.OwnerReview", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Owner", "Owner")
@@ -1986,7 +2117,7 @@ namespace RS1_2024_25.API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.User", "User")
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
                         .WithMany("OwnerReviews")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1999,7 +2130,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Reservation", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", "Account")
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountID")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2011,7 +2142,7 @@ namespace RS1_2024_25.API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.User", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany("Reservations")
                         .HasForeignKey("UserAccountID")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -2023,7 +2154,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Review", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", "Account")
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", "Account")
                         .WithMany()
                         .HasForeignKey("AccountID")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2035,7 +2166,7 @@ namespace RS1_2024_25.API.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.User", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany("Reviews")
                         .HasForeignKey("UserAccountID")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -2047,18 +2178,18 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.Administrator", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", null)
                         .WithOne()
                         .HasForeignKey("RS1_2024_25.API.Data.Models.Auth.Administrator", "AccountID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.User", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.User", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", null)
                         .WithOne()
-                        .HasForeignKey("RS1_2024_25.API.Data.Models.Auth.User", "AccountID")
+                        .HasForeignKey("RS1_2024_25.API.Data.Models.User", "AccountID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2081,7 +2212,7 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Owner", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Auth.Account", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.Account", null)
                         .WithOne()
                         .HasForeignKey("RS1_2024_25.API.Data.Owner", "AccountID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2125,9 +2256,13 @@ namespace RS1_2024_25.API.Migrations
             modelBuilder.Entity("RS1_2024_25.API.Data.Image", b =>
                 {
                     b.Navigation("ApartmentImages");
+
+                    b.Navigation("OwnerImages");
+
+                    b.Navigation("UserImages");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.Account", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Account", b =>
                 {
                     b.Navigation("TwoFactorAuth");
                 });
@@ -2152,7 +2287,7 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("ApartmentToiletries");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Auth.User", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.User", b =>
                 {
                     b.Navigation("Favorites");
 
@@ -2161,11 +2296,15 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("Reservations");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("UserImages");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Owner", b =>
                 {
                     b.Navigation("Apartments");
+
+                    b.Navigation("OwnerImages");
 
                     b.Navigation("OwnerReviews");
                 });

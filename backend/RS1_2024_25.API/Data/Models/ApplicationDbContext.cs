@@ -39,6 +39,8 @@ namespace RS1_2024_25.API.Data
 
         public DbSet<ContactMessage> ContactMessages { get; set; }
 
+        public DbSet<UserImage> UserImages { get; set; }
+        public DbSet<OwnerImage> OwnerImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

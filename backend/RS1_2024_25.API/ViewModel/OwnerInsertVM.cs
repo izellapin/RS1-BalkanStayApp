@@ -13,7 +13,7 @@
         public string Phone { get; set; }
         public int CityID { get; set; } // Obavezno validirati da li CityID postoji
         public int GenderID { get; set; } // Obavezno validirati da li GenderID postoji
-        public byte[]? Image { get; set; } // Opcionalno, ako se slika dodaje prilikom kreiranja
+        public string ImagePath { get; set; } // Changed from byte[] Image
     }
 
 

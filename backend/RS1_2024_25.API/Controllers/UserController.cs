@@ -4,6 +4,7 @@ using RS1_2024_25.API.Data.Models.Auth;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.ViewModel;
 using Microsoft.EntityFrameworkCore;
+using RS1_2024_25.API.Data.Models;
 
 namespace RS1_2024_25.API.Controllers
 {
@@ -29,8 +30,9 @@ namespace RS1_2024_25.API.Controllers
                           .Include(x => x.Reservations)
                           .Include(x => x.Reviews)
                           .Include(x => x.OwnerReviews)
+                          .Include(x => x.UserImages)
+                            .ThenInclude(ui => ui.Image)
                           .ToList();
-
 
             if (users == null)
                 return BadRequest();
@@ -90,12 +92,26 @@ namespace RS1_2024_25.API.Controllers
                 Phone = userVM.Phone,
                 GenderID = userVM.GenderID,
                 CityID = userVM.CityID,
-                Image = userVM.Image,
                 CreatedAt = DateTime.Now
             };
 
             _DbContext.Users.Add(newUser);
             _DbContext.SaveChanges();
+
+            if (!string.IsNullOrEmpty(userVM.ImagePath))
+            {
+                var image = new Image { ImagePath = userVM.ImagePath };
+                _DbContext.Images.Add(image);
+                _DbContext.SaveChanges();
+
+                var userImage = new UserImage
+                {
+                    AccountID = newUser.AccountID,
+                    ImageID = image.ImageID
+                };
+                _DbContext.UserImages.Add(userImage);
+                _DbContext.SaveChanges();
+            }
 
             return Ok(newUser);
         }
@@ -118,7 +134,31 @@ namespace RS1_2024_25.API.Controllers
             user.Phone = userVM.Phone;
             user.GenderID = userVM.GenderID;
             user.CityID = userVM.CityID;
-            user.Image = userVM.Image;
+
+            // Handle image update
+            if (!string.IsNullOrEmpty(userVM.ImagePath))
+            {
+                // Create new image
+                var image = new Image { ImagePath = userVM.ImagePath };
+                _DbContext.Images.Add(image);
+                _DbContext.SaveChanges();
+
+                // Remove old image if exists
+                var oldUserImage = _DbContext.UserImages
+                    .FirstOrDefault(ui => ui.AccountID == user.AccountID);
+                if (oldUserImage != null)
+                {
+                    _DbContext.UserImages.Remove(oldUserImage);
+                }
+
+                // Add new image
+                var userImage = new UserImage
+                {
+                    AccountID = user.AccountID,
+                    ImageID = image.ImageID
+                };
+                _DbContext.UserImages.Add(userImage);
+            }
 
             _DbContext.Users.Update(user);
             _DbContext.SaveChanges();

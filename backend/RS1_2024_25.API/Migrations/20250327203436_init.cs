@@ -212,10 +212,9 @@ namespace RS1_2024_25.API.Migrations
                 {
                     AccountID = table.Column<int>(type: "int", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CityID = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GenderID = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CityID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,10 +243,9 @@ namespace RS1_2024_25.API.Migrations
                 {
                     AccountID = table.Column<int>(type: "int", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CityID = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GenderID = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CityID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -299,6 +297,30 @@ namespace RS1_2024_25.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OwnerImages",
+                columns: table => new
+                {
+                    OwnerImageID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountID = table.Column<int>(type: "int", nullable: false),
+                    ImageID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OwnerImages", x => x.OwnerImageID);
+                    table.ForeignKey(
+                        name: "FK_OwnerImages_Images_ImageID",
+                        column: x => x.ImageID,
+                        principalTable: "Images",
+                        principalColumn: "ImageID");
+                    table.ForeignKey(
+                        name: "FK_OwnerImages_Owner_AccountID",
+                        column: x => x.AccountID,
+                        principalTable: "Owner",
+                        principalColumn: "AccountID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OwnerReviews",
                 columns: table => new
                 {
@@ -319,6 +341,30 @@ namespace RS1_2024_25.API.Migrations
                     table.ForeignKey(
                         name: "FK_OwnerReviews_User_UserID",
                         column: x => x.UserID,
+                        principalTable: "User",
+                        principalColumn: "AccountID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserImages",
+                columns: table => new
+                {
+                    UserImageID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountID = table.Column<int>(type: "int", nullable: false),
+                    ImageID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserImages", x => x.UserImageID);
+                    table.ForeignKey(
+                        name: "FK_UserImages_Images_ImageID",
+                        column: x => x.ImageID,
+                        principalTable: "Images",
+                        principalColumn: "ImageID");
+                    table.ForeignKey(
+                        name: "FK_UserImages_User_AccountID",
+                        column: x => x.AccountID,
                         principalTable: "User",
                         principalColumn: "AccountID");
                 });
@@ -578,7 +624,9 @@ namespace RS1_2024_25.API.Migrations
                     { 2, "/images/room1.jpg" },
                     { 3, "/images/toilet2.jpg" },
                     { 4, "/images/room1.jpg" },
-                    { 5, "/images/image2.jpg" }
+                    { 5, "/images/image2.jpg" },
+                    { 6, "/images/male.png" },
+                    { 7, "/images/female.png" }
                 });
 
             migrationBuilder.InsertData(
@@ -700,23 +748,23 @@ namespace RS1_2024_25.API.Migrations
 
             migrationBuilder.InsertData(
                 table: "Owner",
-                columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Image", "Phone" },
+                columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Phone" },
                 values: new object[,]
                 {
-                    { 9, 1, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(4882), 2, new byte[0], "061-000-111" },
-                    { 10, 2, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(5115), 2, new byte[0], "061-000-222" },
-                    { 11, 3, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(5118), 1, new byte[0], "061-000-333" }
+                    { 9, 1, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7189), 2, "061-000-111" },
+                    { 10, 2, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7343), 2, "061-000-222" },
+                    { 11, 3, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7345), 1, "061-000-333" }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Image", "Phone" },
+                columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Phone" },
                 values: new object[,]
                 {
-                    { 5, 1, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3045), 1, null, "+38761000111" },
-                    { 6, 2, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3387), 2, null, "+38761000222" },
-                    { 7, 3, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3390), 1, null, "+38761000222" },
-                    { 8, 4, new DateTime(2025, 3, 20, 15, 45, 42, 65, DateTimeKind.Utc).AddTicks(3393), 2, null, "+38761000222" }
+                    { 5, 1, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6245), 1, "+38761000111" },
+                    { 6, 2, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6428), 2, "+38761000222" },
+                    { 7, 3, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6430), 1, "+38761000222" },
+                    { 8, 4, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6432), 2, "+38761000222" }
                 });
 
             migrationBuilder.InsertData(
@@ -808,6 +856,27 @@ namespace RS1_2024_25.API.Migrations
                     { 5, 4, 5 }
                 });
 
+            migrationBuilder.InsertData(
+                table: "OwnerImages",
+                columns: new[] { "OwnerImageID", "AccountID", "ImageID" },
+                values: new object[,]
+                {
+                    { 1, 9, 6 },
+                    { 2, 10, 6 },
+                    { 3, 11, 7 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "UserImages",
+                columns: new[] { "UserImageID", "AccountID", "ImageID" },
+                values: new object[,]
+                {
+                    { 1, 5, 7 },
+                    { 2, 6, 7 },
+                    { 3, 7, 6 },
+                    { 4, 8, 6 }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ApartmentAmenities_AmenityID",
                 table: "ApartmentAmenities",
@@ -894,6 +963,16 @@ namespace RS1_2024_25.API.Migrations
                 column: "GenderID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OwnerImages_AccountID",
+                table: "OwnerImages",
+                column: "AccountID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnerImages_ImageID",
+                table: "OwnerImages",
+                column: "ImageID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OwnerReviews_OwnerID",
                 table: "OwnerReviews",
                 column: "OwnerID");
@@ -948,6 +1027,16 @@ namespace RS1_2024_25.API.Migrations
                 name: "IX_User_GenderID",
                 table: "User",
                 column: "GenderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserImages_AccountID",
+                table: "UserImages",
+                column: "AccountID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserImages_ImageID",
+                table: "UserImages",
+                column: "ImageID");
         }
 
         /// <inheritdoc />
@@ -978,6 +1067,9 @@ namespace RS1_2024_25.API.Migrations
                 name: "MyAuthenticationTokens");
 
             migrationBuilder.DropTable(
+                name: "OwnerImages");
+
+            migrationBuilder.DropTable(
                 name: "OwnerReviews");
 
             migrationBuilder.DropTable(
@@ -990,10 +1082,10 @@ namespace RS1_2024_25.API.Migrations
                 name: "TwoFactorAuths");
 
             migrationBuilder.DropTable(
-                name: "Amenities");
+                name: "UserImages");
 
             migrationBuilder.DropTable(
-                name: "Images");
+                name: "Amenities");
 
             migrationBuilder.DropTable(
                 name: "Rules");
@@ -1003,6 +1095,9 @@ namespace RS1_2024_25.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Apartments");
+
+            migrationBuilder.DropTable(
+                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "User");

@@ -10,6 +10,6 @@
         public string Phone { get; set; }
         public int GenderID { get; set; }
         public int CityID { get; set; }
-        public byte[]? Image { get; set; }
+        public string ImagePath { get; set; }
     }
 }

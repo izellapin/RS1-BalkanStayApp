@@ -114,9 +114,7 @@ namespace RS1_2024_25.API.Data
                       Phone = "+38761000111",
                       GenderID = 1,
                       CityID = 1,
-                      Image = null,
-                      CreatedAt = DateTime.UtcNow,
-
+                      CreatedAt = DateTime.UtcNow
                   },
 
                   new User
@@ -130,7 +128,6 @@ namespace RS1_2024_25.API.Data
                       Phone = "+38761000222",
                       GenderID = 2,
                       CityID = 2,
-                      Image = null,
                       CreatedAt = DateTime.UtcNow
                   },
 
@@ -145,7 +142,6 @@ namespace RS1_2024_25.API.Data
                       Phone = "+38761000222",
                       GenderID = 1,
                       CityID = 3,
-                      Image = null,
                       CreatedAt = DateTime.UtcNow
                   },
 
@@ -160,7 +156,6 @@ namespace RS1_2024_25.API.Data
                       Phone = "+38761000222",
                       GenderID = 2,
                       CityID = 4,
-                      Image = null,
                       CreatedAt = DateTime.UtcNow
                   }
             );
@@ -180,7 +175,6 @@ namespace RS1_2024_25.API.Data
                     Phone = "061-000-111",
                     GenderID = 2,
                     CityID = 1,
-                    Image = new byte[0],
                     CreatedAt = DateTime.UtcNow
 
                 },
@@ -195,7 +189,6 @@ namespace RS1_2024_25.API.Data
                      Phone = "061-000-222",
                      GenderID = 2,
                      CityID = 2,
-                     Image = new byte[0],
                      CreatedAt = DateTime.UtcNow,
 
                  },
@@ -210,7 +203,6 @@ namespace RS1_2024_25.API.Data
                      Phone = "061-000-333",
                      GenderID = 1,
                      CityID = 3,
-                     Image = new byte[0],
                      CreatedAt = DateTime.UtcNow,
 
                  }
@@ -439,24 +431,48 @@ namespace RS1_2024_25.API.Data
             new Image
             {
                 ImageID = 2,
-                ImagePath = ImageSeeder.GetImagePath("/images/room1.jpg") // ❌ Wrong type (byte[])
+                ImagePath = ImageSeeder.GetImagePath("/images/room1.jpg") 
             },
             new Image
             {
                 ImageID = 3,
-                ImagePath = ImageSeeder.GetImagePath("/images/toilet2.jpg") // ❌ Wrong type (byte[])
+                ImagePath = ImageSeeder.GetImagePath("/images/toilet2.jpg")
             },
+
              new Image
              {
                  ImageID = 4,
-                 ImagePath = ImageSeeder.GetImagePath("/images/room1.jpg") // ❌ Wrong type (byte[])
+                 ImagePath = ImageSeeder.GetImagePath("/images/room1.jpg")
              },
             new Image
             {
                 ImageID = 5,
-                ImagePath = ImageSeeder.GetImagePath("/images/image2.jpg") // ❌ Wrong type (byte[])
+                ImagePath = ImageSeeder.GetImagePath("/images/image2.jpg") 
+            },
+            new Image
+            {
+                ImageID = 6,
+                ImagePath = ImageSeeder.GetImagePath("/images/male.png") 
+            },
+            new Image
+            {
+                ImageID = 7,
+                ImagePath = ImageSeeder.GetImagePath("/images/female.png") 
             }
         );
+
+            modelBuilder.Entity<UserImage>().HasData(
+                new UserImage { UserImageID = 1, AccountID = 5, ImageID = 7 }, // For John Doe
+                new UserImage { UserImageID = 2, AccountID = 6, ImageID = 7 }, // For Jane Doe
+                new UserImage { UserImageID = 3, AccountID = 7, ImageID = 6 }, // For Xkorisnik
+                new UserImage { UserImageID = 4, AccountID = 8, ImageID = 6 }  // For YYKorisnik
+            );
+
+            modelBuilder.Entity<OwnerImage>().HasData(
+                new OwnerImage { OwnerImageID = 1, AccountID = 9, ImageID = 6 }, // For Izel
+                new OwnerImage { OwnerImageID = 2, AccountID = 10, ImageID = 6 }, // For Maida
+                new OwnerImage { OwnerImageID = 3, AccountID = 11, ImageID = 7 }  // For Admin Owner
+            );
 
 
 

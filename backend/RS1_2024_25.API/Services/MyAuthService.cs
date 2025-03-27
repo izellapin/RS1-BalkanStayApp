@@ -117,7 +117,7 @@ namespace RS1_2024_25.API.Services
                 IsAdmin = account.isAdministrator, // Admin check
                 isOwner = account.isOwner, // Manager logic based on Owner
                 IsLoggedIn = true,
-                SlikaPath = user?.Image // Use Image property only if the account is a User
+                SlikaPath = user?.UserImages?.FirstOrDefault()?.Image?.ImagePath
             };
         }
     }
@@ -132,6 +132,6 @@ namespace RS1_2024_25.API.Services
         public bool IsAdmin { get; set; } // Defaulted to false
         public bool isOwner { get; set; } // Defaulted to false
         public bool IsLoggedIn { get; set; }
-        public byte[] SlikaPath { get; set; } // Maps to Image
+        public string SlikaPath { get; set; } // Changed from byte[] to string
     }
 }

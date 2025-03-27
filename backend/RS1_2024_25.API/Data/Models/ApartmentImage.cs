@@ -10,7 +10,7 @@ namespace RS1_2024_25.API.Data
         [ForeignKey(nameof(Apartment))]
         public int ApartmentId { get; set; }
 
-        [JsonIgnore] // Prevents circular reference when serializing
+        [JsonIgnore] 
         public Apartment? Apartment { get; set; }
 
         [ForeignKey(nameof(Image))]

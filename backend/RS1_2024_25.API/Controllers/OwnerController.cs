@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Auth;
 using RS1_2024_25.API.ViewModel;
 using System.Numerics;
@@ -32,7 +33,9 @@ namespace RS1_2024_25.API.Controllers
                                 .ThenInclude(y=>y.Country)
                             .Include(x => x.Gender) 
                             .Include(x => x.OwnerReviews) 
-                            .Include(x => x.Apartments) 
+                            .Include(x => x.Apartments)
+                            .Include(x => x.OwnerImages)
+                                .ThenInclude(oi => oi.Image)
                             .ToList();
 
             if (owners == null)
@@ -95,13 +98,27 @@ namespace RS1_2024_25.API.Controllers
                 Phone = x.Phone,
                 GenderID = x.GenderID,
                 CityID = x.CityID,
-                Image = x.Image,
                 CreatedAt = DateTime.Now
             };
 
-
             _DbContext.Owners.Add(newOwner);
             _DbContext.SaveChanges();
+
+            // Add the image if provided
+            if (!string.IsNullOrEmpty(x.ImagePath))
+            {
+                var image = new Image { ImagePath = x.ImagePath };
+                _DbContext.Images.Add(image);
+                _DbContext.SaveChanges();
+
+                var ownerImage = new OwnerImage
+                {
+                    AccountID = newOwner.AccountID,
+                    ImageID = image.ImageID
+                };
+                _DbContext.OwnerImages.Add(ownerImage);
+                _DbContext.SaveChanges();
+            }
 
             return Ok(newOwner);
         }
@@ -132,3 +149,4 @@ namespace RS1_2024_25.API.Controllers
         }
     }
 }
+

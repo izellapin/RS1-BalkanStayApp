@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RS1_2024_25.API.Data.Models.Auth;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace RS1_2024_25.API.Data.Models.Auth
+namespace RS1_2024_25.API.Data.Models
 {
     public class Account
     {
@@ -14,7 +15,6 @@ namespace RS1_2024_25.API.Data.Models.Auth
         [JsonIgnore]
         public string Password { get; set; }
 
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
@@ -26,12 +26,10 @@ namespace RS1_2024_25.API.Data.Models.Auth
 
         public bool isUser => User != null;
 
-
         [JsonIgnore]
         public Administrator? Administrator => this as Administrator;
 
         public bool isAdministrator => Administrator != null;
-
 
         [JsonIgnore]
         public Owner? Owner => this as Owner;

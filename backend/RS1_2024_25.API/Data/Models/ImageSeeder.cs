@@ -5,7 +5,7 @@ namespace RS1_2024_25.API.Data.Models
     {
         public static string GetImagePath(string filePath)
         {
-            return filePath; // ✅ Return file path instead of byte[]
+            return filePath; 
         }
 
         
