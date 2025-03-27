@@ -34,7 +34,10 @@
         <!-- Profile Image Section -->
         <div class="profile-image-section">
           <div class="image-container">
-            <img [src]="profileImageUrl || 'assets/default-avatar.png'" alt="Profile Preview" class="profile-image">
+            <img [src]="profileImageUrl" 
+                 alt="Profile Picture"
+                 class="profile-image"
+                 (error)="profileImageUrl = 'assets/default-avatar.png'">
           </div>
           <div class="upload-button">
             <label for="profile-upload" class="upload-label">
