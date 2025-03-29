@@ -575,7 +575,8 @@ namespace RS1_2024_25.API.Migrations
                     { 8, "yyyy@example.com", "YYKorisnik", "YYPrezime", "YYYXX", null, null, "yyyy" },
                     { 9, "izel@gmail.com", "Izel", "Repuh", "Izel", null, null, "Izel" },
                     { 10, "maida@gmail.com", "Maida", "Kovac", "Maida", null, null, "Maida" },
-                    { 11, "owner@gmail.com", "Admin", "Admin", "Admin", null, null, "Admin" }
+                    { 11, "owner@gmail.com", "Admin", "Admin", "Admin", null, null, "Admin" },
+                    { 12, "izellapin@gmail.com", "Izel    ", "Repuh", "password", null, null, "izellapin" }
                 });
 
             migrationBuilder.InsertData(
@@ -751,9 +752,9 @@ namespace RS1_2024_25.API.Migrations
                 columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Phone" },
                 values: new object[,]
                 {
-                    { 9, 1, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7189), 2, "061-000-111" },
-                    { 10, 2, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7343), 2, "061-000-222" },
-                    { 11, 3, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(7345), 1, "061-000-333" }
+                    { 9, 1, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(7485), 2, "061-000-111" },
+                    { 10, 2, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(7608), 2, "061-000-222" },
+                    { 11, 3, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(7621), 1, "061-000-333" }
                 });
 
             migrationBuilder.InsertData(
@@ -761,10 +762,11 @@ namespace RS1_2024_25.API.Migrations
                 columns: new[] { "AccountID", "CityID", "CreatedAt", "GenderID", "Phone" },
                 values: new object[,]
                 {
-                    { 5, 1, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6245), 1, "+38761000111" },
-                    { 6, 2, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6428), 2, "+38761000222" },
-                    { 7, 3, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6430), 1, "+38761000222" },
-                    { 8, 4, new DateTime(2025, 3, 27, 20, 34, 35, 705, DateTimeKind.Utc).AddTicks(6432), 2, "+38761000222" }
+                    { 5, 1, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(6730), 1, "+38761000111" },
+                    { 6, 2, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(6894), 2, "+38761000222" },
+                    { 7, 3, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(6896), 1, "+38761000222" },
+                    { 8, 4, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(6897), 2, "+38761000222" },
+                    { 12, 4, new DateTime(2025, 3, 29, 14, 57, 40, 910, DateTimeKind.Utc).AddTicks(6899), 2, "+38761000222" }
                 });
 
             migrationBuilder.InsertData(
@@ -874,7 +876,8 @@ namespace RS1_2024_25.API.Migrations
                     { 1, 5, 7 },
                     { 2, 6, 7 },
                     { 3, 7, 6 },
-                    { 4, 8, 6 }
+                    { 4, 8, 6 },
+                    { 5, 12, 6 }
                 });
 
             migrationBuilder.CreateIndex(

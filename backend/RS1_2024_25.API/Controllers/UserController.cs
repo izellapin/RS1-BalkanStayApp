@@ -53,10 +53,12 @@ namespace RS1_2024_25.API.Controllers
                           .Include(x => x.Reservations)
                           .Include(x => x.Reviews)
                           .Include(x => x.OwnerReviews)
-                          .FirstOrDefault(a => AccountId == AccountId);
+                          .Include(x => x.UserImages)
+                            .ThenInclude(ui => ui.Image)
+                          .FirstOrDefault(x => x.AccountID == AccountId);
 
             if (user == null)
-                return BadRequest();
+                return NotFound();
 
             return Ok(user);
         }

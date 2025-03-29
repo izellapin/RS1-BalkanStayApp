@@ -45,12 +45,10 @@
     </nav>
   </div>
   <div class="content">
-    <div class="content-wrapper">
+    <!-- Edit Profile Form -->
+    <div *ngIf="selectedMenuItem === 'Edit Profile'" class="content-wrapper">
       <h2 class="page-title">Edit Profile</h2>
-
       <div class="profile-form">
-
-        <!-- Form Section -->
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="form-container">
           <div class="form-row">
             <div class="form-field">
@@ -94,6 +92,121 @@
             <button type="button" class="btn-cancel" (click)="resetForm()">Cancel</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- My Travels Content -->
+    <div *ngIf="selectedMenuItem === 'My Travels'" class="content-wrapper">
+      <h2 class="page-title">My Travels</h2>
+      <div class="travels-content">
+        <div class="travels-list">
+          <div class="travel-item" *ngFor="let travel of travels">
+            <div class="travel-header">
+              <h3>{{travel.destination}}</h3>
+              <span class="travel-date">{{travel.date}}</span>
+            </div>
+            <div class="travel-details">
+              <p><i class="fas fa-calendar"></i> Duration: {{travel.duration}}</p>
+              <p><i class="fas fa-hotel"></i> Accommodation: {{travel.accommodation}}</p>
+              <p><i class="fas fa-map-marker-alt"></i> Location: {{travel.location}}</p>
+            </div>
+            <div class="travel-actions">
+              <button class="btn-view">View Details</button>
+              <button class="btn-share">Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Bookings Content -->
+    <div *ngIf="selectedMenuItem === 'My Bookings'" class="content-wrapper">
+      <h2 class="page-title">My Bookings</h2>
+      <div class="bookings-content">
+        <div class="bookings-list">
+          <div class="booking-item" *ngFor="let booking of bookings">
+            <div class="booking-header">
+              <h3>Booking #{{booking.id}}</h3>
+              <span class="booking-status" [ngClass]="booking.status">{{booking.status}}</span>
+            </div>
+            <div class="booking-details">
+              <p><i class="fas fa-hotel"></i> Property: {{booking.property}}</p>
+              <p><i class="fas fa-calendar"></i> Check-in: {{booking.checkIn}}</p>
+              <p><i class="fas fa-calendar"></i> Check-out: {{booking.checkOut}}</p>
+              <p><i class="fas fa-users"></i> Guests: {{booking.guests}}</p>
+            </div>
+            <div class="booking-actions">
+              <button class="btn-view">View Details</button>
+              <button class="btn-cancel" *ngIf="booking.status === 'Confirmed'">Cancel Booking</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments Content -->
+    <div *ngIf="selectedMenuItem === 'Payments'" class="content-wrapper">
+      <h2 class="page-title">Payments</h2>
+      <div class="payments-content">
+        <div class="payments-summary">
+          <div class="summary-card">
+            <h3>Total Spent</h3>
+            <p class="amount">${{totalSpent}}</p>
+          </div>
+          <div class="summary-card">
+            <h3>Upcoming Payments</h3>
+            <p class="amount">${{upcomingPayments}}</p>
+          </div>
+        </div>
+        <div class="payments-list">
+          <div class="payment-item" *ngFor="let payment of payments">
+            <div class="payment-header">
+              <h3>Payment #{{payment.id}}</h3>
+              <span class="payment-status" [ngClass]="payment.status">{{payment.status}}</span>
+            </div>
+            <div class="payment-details">
+              <p><i class="fas fa-calendar"></i> Date: {{payment.date}}</p>
+              <p><i class="fas fa-money-bill"></i> Amount: ${{payment.amount}}</p>
+              <p><i class="fas fa-credit-card"></i> Method: {{payment.method}}</p>
+            </div>
+            <div class="payment-actions">
+              <button class="btn-receipt">View Receipt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activities Content -->
+    <div *ngIf="selectedMenuItem === 'Activities'" class="content-wrapper">
+      <h2 class="page-title">Activities</h2>
+      <div class="activities-content">
+        <div class="activities-filters">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Upcoming</button>
+          <button class="filter-btn">Past</button>
+          <button class="filter-btn">Saved</button>
+        </div>
+        <div class="activities-list">
+          <div class="activity-item" *ngFor="let activity of activities">
+            <div class="activity-image">
+              <img [src]="activity.image" [alt]="activity.title">
+            </div>
+            <div class="activity-details">
+              <h3>{{activity.title}}</h3>
+              <p class="activity-description">{{activity.description}}</p>
+              <div class="activity-info">
+                <span><i class="fas fa-calendar"></i> {{activity.date}}</span>
+                <span><i class="fas fa-map-marker-alt"></i> {{activity.location}}</span>
+                <span><i class="fas fa-clock"></i> {{activity.duration}}</span>
+              </div>
+              <div class="activity-actions">
+                <button class="btn-book">Book Now</button>
+                <button class="btn-save"><i class="fas fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

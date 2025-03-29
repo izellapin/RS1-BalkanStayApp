@@ -11,13 +11,11 @@ import {LogoutComponent} from './logout/logout.component';
 import {AuthLayoutComponent} from './auth-layout/auth-layout.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
-
 import {MatButton, MatButtonModule} from '@angular/material/button';
 import {MatSlideToggle, MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import {SharedModule} from '../shared/shared.module';
 import { MyProfileComponent } from './my-profile/my-profile.component';
-
 
 @NgModule({
   declarations: [

@@ -19,7 +19,7 @@ const routes: Routes = [
       { path: 'two-factor', component: TwoFactorComponent },
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'reset-password', component: ResetPasswordComponent },
-      { path: 'my-profile', component: MyProfileComponent },
+      { path: 'my-profile', component: MyProfileComponent }
     ]
   },
 ];

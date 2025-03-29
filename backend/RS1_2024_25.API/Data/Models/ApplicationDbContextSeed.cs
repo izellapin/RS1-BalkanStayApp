@@ -157,7 +157,20 @@ namespace RS1_2024_25.API.Data
                       GenderID = 2,
                       CityID = 4,
                       CreatedAt = DateTime.UtcNow
-                  }
+                  },
+                   new User
+                   {
+                       AccountID = 12,
+                       Username = "izellapin",
+                       Email = "izellapin@gmail.com",
+                       Password = "password",
+                       FirstName = "Izel    ",
+                       LastName = "Repuh",
+                       Phone = "+38761000222",
+                       GenderID = 2,
+                       CityID = 4,
+                       CreatedAt = DateTime.UtcNow
+                   }
             );
 
 
@@ -465,7 +478,8 @@ namespace RS1_2024_25.API.Data
                 new UserImage { UserImageID = 1, AccountID = 5, ImageID = 7 }, // For John Doe
                 new UserImage { UserImageID = 2, AccountID = 6, ImageID = 7 }, // For Jane Doe
                 new UserImage { UserImageID = 3, AccountID = 7, ImageID = 6 }, // For Xkorisnik
-                new UserImage { UserImageID = 4, AccountID = 8, ImageID = 6 }  // For YYKorisnik
+                new UserImage { UserImageID = 4, AccountID = 8, ImageID = 6 },  // For YYKorisnik
+                new UserImage { UserImageID = 5, AccountID = 12, ImageID = 6 }  // For YYKorisnik
             );
 
             modelBuilder.Entity<OwnerImage>().HasData(
