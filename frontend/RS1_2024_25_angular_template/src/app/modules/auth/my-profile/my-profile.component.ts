@@ -40,7 +40,7 @@ interface UserUpdateRequest {
   phone: string;
   genderID: number;
   cityID: number;
-  imagePath?: string;  // Optional field for profile image
+  imagePath?: string;
 }
 
 interface Reservation {
@@ -50,10 +50,26 @@ interface Reservation {
   startDate: string;
   endDate: string;
   status: boolean;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
+}
+
+interface Apartment {
+  apartmentId: number;
+  name: string;
+  cityName: string;
+  adress: string;
+  cityId?: number;
+  city?: {
+    name: string;
+    id: number;
+  };
+}
+
+interface Travel {
+  reservationID: number;
+  startDate: string;
+  endDate: string;
+  duration: number;
+  apartment: Apartment;
 }
 
 @Component({
@@ -72,22 +88,7 @@ export class MyProfileComponent implements OnInit {
   successMessage: string | null = null;
 
   // Travels data
-  travels = [
-    {
-      destination: 'Paris, France',
-      date: 'June 2024',
-      duration: '7 days',
-      accommodation: 'Hotel Eiffel View',
-      location: 'Champ de Mars'
-    },
-    {
-      destination: 'Tokyo, Japan',
-      date: 'August 2024',
-      duration: '10 days',
-      accommodation: 'Sakura Hotel',
-      location: 'Shibuya'
-    }
-  ];
+  travels: Travel[] = [];
 
   // Bookings data
   bookings: Reservation[] = [];
@@ -147,6 +148,7 @@ export class MyProfileComponent implements OnInit {
   ngOnInit() {
     this.loadUserData();
     this.loadUserBookings();
+    this.loadUserTravels();
   }
 
   selectMenuItem(item: string) {
@@ -349,5 +351,51 @@ export class MyProfileComponent implements OnInit {
           }
         });
     }
+  }
+
+  private loadUserTravels() {
+    const authInfo = localStorage.getItem('authinfo');
+    if (authInfo) {
+      const { userId } = JSON.parse(authInfo);
+      
+      this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`)
+        .subscribe({
+          next: (reservations) => {
+            const userReservations = reservations.filter(res => res.accountID === userId);
+            
+            userReservations.forEach(reservation => {
+              this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${reservation.apartmentId}`)
+                .subscribe({
+                  next: (apartment) => {
+                    const start = new Date(reservation.startDate);
+                    const end = new Date(reservation.endDate);
+                    const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
+
+                    const travel: Travel = {
+                      reservationID: reservation.reservationID,
+                      startDate: reservation.startDate,
+                      endDate: reservation.endDate,
+                      duration: duration,
+                      apartment: apartment
+                    };
+
+                    this.travels.push(travel);
+                  },
+                  error: (error) => {
+                    console.error('Error loading apartment details:', error);
+                  }
+                });
+            });
+          },
+          error: (error) => {
+            console.error('Error loading travels:', error);
+            this.errorMessage = 'Failed to load travels';
+          }
+        });
+    }
+  }
+
+  viewTravelDetails(reservationId: number) {
+    console.log('Viewing travel details for reservation:', reservationId);
   }
 }

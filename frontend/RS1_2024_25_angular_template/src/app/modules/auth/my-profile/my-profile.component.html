@@ -98,15 +98,33 @@
     </div>
 
     <!-- My Travels Section -->
-    <div *ngIf="selectedMenuItem === 'My Travels'">
+    <div *ngIf="selectedMenuItem === 'My Travels'" class="travels-section">
       <h2>My Travels</h2>
-      <div class="travels-list">
+
+      <div *ngIf="travels.length === 0" class="no-travels">
+        <p>You don't have any travels yet.</p>
+      </div>
+
+      <div class="travels-grid">
         <div *ngFor="let travel of travels" class="travel-card">
-          <h3>{{ travel.destination }}</h3>
-          <p>Date: {{ travel.date }}</p>
-          <p>Duration: {{ travel.duration }}</p>
-          <p>Accommodation: {{ travel.accommodation }}</p>
-          <p>Location: {{ travel.location }}</p>
+          <div class="travel-header">
+            <h3>{{ travel.apartment.city }}</h3>
+          </div>
+
+          <div class="travel-details">
+            <div class="travel-info">
+              <p><strong>Date:</strong> {{ travel.startDate | date }} - {{ travel.endDate | date }}</p>
+              <p><strong>Duration:</strong> {{ travel.duration }} days</p>
+              <p><strong>Accommodation:</strong> {{ travel.apartment.name }}</p>
+              <p><strong>Location:</strong> {{ travel.apartment.cityName }} - {{ travel.apartment.adress }}</p>
+            </div>
+          </div>
+
+          <div class="travel-actions">
+            <button class="btn btn-primary" (click)="viewTravelDetails(travel.reservationID)">
+              View Details
+            </button>
+          </div>
         </div>
       </div>
     </div>
