@@ -194,9 +194,10 @@ export class MyProfileComponent implements OnInit {
   onSubmit() {
     if (this.profileForm.valid) {
       this.isLoading = true;
-      const authInfo = localStorage.getItem('authinfo');
-      if (authInfo) {
-        const { userId } = JSON.parse(authInfo);
+      const authToken = localStorage.getItem('my-auth-token');
+      if (authToken) {
+        const parsedToken = JSON.parse(authToken);
+        const userId = parsedToken.myAuthInfo.userId;
         
         const updateData: UserUpdateRequest = {
           accountID: Number(userId),
@@ -212,7 +213,11 @@ export class MyProfileComponent implements OnInit {
 
         console.log('Sending update data:', updateData);
 
-        this.updateProfile(updateData).subscribe({
+        this.http.put(`${this.apiUrl}/User/Update`, updateData, {
+          headers: {
+            'my-auth-token': parsedToken.token
+          }
+        }).subscribe({
           next: (response) => {
             console.log('Full response:', response);
             this.successMessage = 'Profile updated successfully!';
@@ -222,7 +227,6 @@ export class MyProfileComponent implements OnInit {
           error: (error) => {
             console.error('Full error:', error);
             if (error.error?.errors) {
-              // Log the full error object to see its structure
               console.log('Validation errors:', error.error.errors);
               const errorMessages = Object.values(error.error.errors).flat();
               this.errorMessage = errorMessages.join(', ');
@@ -243,43 +247,67 @@ export class MyProfileComponent implements OnInit {
 
   public loadUserData() {
     this.isLoading = true;
-    const authInfo = localStorage.getItem('authinfo');
-    if (authInfo) {
-      const { userId } = JSON.parse(authInfo);
-      
-      this.http.get<UserProfile>(`${this.apiUrl}/User/GetById/${userId}`).subscribe({
-        next: (userData) => {
-          console.log('Loaded user data:', userData);
-          this.profileForm.patchValue({
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email,
-            phone: userData.phone,
-            username: userData.username,
-            cityID: userData.cityID,
-            genderID: userData.genderID
-          });
-
-          // Fix the URL construction
-          if (userData.userImages && userData.userImages.length > 0) {
-            // Remove the apiUrl if it's already in the imagePath
-            const imagePath = userData.userImages[0].image.imagePath;
-            this.profileImageUrl = imagePath.startsWith('http') 
-              ? imagePath 
-              : this.apiUrl + imagePath;
-            console.log('Profile image URL:', this.profileImageUrl);
-          } else {
-            this.profileImageUrl = this.apiUrl + '/images/default.jpg';
-          }
-          
+    const authToken = localStorage.getItem('my-auth-token');
+    if (authToken) {
+      try {
+        const parsedToken = JSON.parse(authToken);
+        const userId = parsedToken.myAuthInfo.userId;
+        const token = parsedToken.token;
+        
+        if (!token) {
+          this.errorMessage = 'Authentication token not found';
           this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error loading user data:', error);
-          this.errorMessage = 'Failed to load user data. Please try again.';
-          this.isLoading = false;
+          return;
         }
-      });
+
+        console.log('Loading user data with userId:', userId);
+        console.log('Token:', token);
+
+        this.http.get<UserProfile>(`${this.apiUrl}/User/Get/${userId}`, {
+          headers: {
+            'my-auth-token': token
+          }
+        }).subscribe({
+          next: (userData) => {
+            console.log('Loaded user data:', userData);
+            this.profileForm.patchValue({
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              email: userData.email,
+              phone: userData.phone,
+              username: userData.username,
+              cityID: userData.cityID,
+              genderID: userData.genderID
+            });
+
+            // Fix the URL construction
+            if (userData.userImages && userData.userImages.length > 0) {
+              // Remove the apiUrl if it's already in the imagePath
+              const imagePath = userData.userImages[0].image.imagePath;
+              this.profileImageUrl = imagePath.startsWith('http') 
+                ? imagePath 
+                : this.apiUrl + imagePath;
+              console.log('Profile image URL:', this.profileImageUrl);
+            } else {
+              this.profileImageUrl = this.apiUrl + '/images/default.jpg';
+            }
+            
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error loading user data:', error);
+            this.errorMessage = 'Failed to load user data. Please try again.';
+            this.isLoading = false;
+          }
+        });
+      } catch (error) {
+        console.error('Error parsing auth token:', error);
+        this.errorMessage = 'Invalid authentication token';
+        this.isLoading = false;
+      }
+    } else {
+      this.errorMessage = 'No authentication token found';
+      this.isLoading = false;
     }
   }
 
@@ -316,32 +344,30 @@ export class MyProfileComponent implements OnInit {
     console.log('Saving activity:', activityTitle);
   }
 
-  private updateProfile(updateData: UserUpdateRequest) {
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-
-    return this.http.put(`${this.apiUrl}/User/Update`, updateData, { 
-      headers: headers,
-      observe: 'response'  // This will give us the full HTTP response
-    });
-  }
-
   public handleImageError(): void {
     this.profileImageUrl = this.apiUrl + '/images/default.jpg';
   }
 
   private loadUserBookings() {
-    const authInfo = localStorage.getItem('authinfo');
-    if (authInfo) {
-      const { userId } = JSON.parse(authInfo);
-      
-      // Use the Get endpoint and filter for the current user
-      this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`)
-        .subscribe({
+    const authToken = localStorage.getItem('my-auth-token');
+    if (authToken) {
+      try {
+        const parsedToken = JSON.parse(authToken);
+        const userId = parsedToken.myAuthInfo.userId;
+        const token = parsedToken.token;
+        
+        if (!token) {
+          this.errorMessage = 'Authentication token not found';
+          return;
+        }
+
+        this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`, {
+          headers: {
+            'my-auth-token': token
+          }
+        }).subscribe({
           next: (reservations) => {
             console.log('All reservations:', reservations);
-            // Filter reservations for current user
             this.bookings = reservations.filter(res => res.accountID === userId);
             console.log('User bookings:', this.bookings);
           },
@@ -350,41 +376,59 @@ export class MyProfileComponent implements OnInit {
             this.errorMessage = 'Failed to load bookings';
           }
         });
+      } catch (error) {
+        console.error('Error parsing auth token:', error);
+        this.errorMessage = 'Invalid authentication token';
+      }
     }
   }
 
   private loadUserTravels() {
-    const authInfo = localStorage.getItem('authinfo');
-    if (authInfo) {
-      const { userId } = JSON.parse(authInfo);
-      
-      this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`)
-        .subscribe({
+    const authToken = localStorage.getItem('my-auth-token');
+    if (authToken) {
+      try {
+        const parsedToken = JSON.parse(authToken);
+        const userId = parsedToken.myAuthInfo.userId;
+        const token = parsedToken.token;
+        
+        if (!token) {
+          this.errorMessage = 'Authentication token not found';
+          return;
+        }
+
+        this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`, {
+          headers: {
+            'my-auth-token': token
+          }
+        }).subscribe({
           next: (reservations) => {
             const userReservations = reservations.filter(res => res.accountID === userId);
             
             userReservations.forEach(reservation => {
-              this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${reservation.apartmentId}`)
-                .subscribe({
-                  next: (apartment) => {
-                    const start = new Date(reservation.startDate);
-                    const end = new Date(reservation.endDate);
-                    const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
+              this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${reservation.apartmentId}`, {
+                headers: {
+                  'my-auth-token': token
+                }
+              }).subscribe({
+                next: (apartment) => {
+                  const start = new Date(reservation.startDate);
+                  const end = new Date(reservation.endDate);
+                  const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
 
-                    const travel: Travel = {
-                      reservationID: reservation.reservationID,
-                      startDate: reservation.startDate,
-                      endDate: reservation.endDate,
-                      duration: duration,
-                      apartment: apartment
-                    };
+                  const travel: Travel = {
+                    reservationID: reservation.reservationID,
+                    startDate: reservation.startDate,
+                    endDate: reservation.endDate,
+                    duration: duration,
+                    apartment: apartment
+                  };
 
-                    this.travels.push(travel);
-                  },
-                  error: (error) => {
-                    console.error('Error loading apartment details:', error);
-                  }
-                });
+                  this.travels.push(travel);
+                },
+                error: (error) => {
+                  console.error('Error loading apartment details:', error);
+                }
+              });
             });
           },
           error: (error) => {
@@ -392,6 +436,10 @@ export class MyProfileComponent implements OnInit {
             this.errorMessage = 'Failed to load travels';
           }
         });
+      } catch (error) {
+        console.error('Error parsing auth token:', error);
+        this.errorMessage = 'Invalid authentication token';
+      }
     }
   }
 

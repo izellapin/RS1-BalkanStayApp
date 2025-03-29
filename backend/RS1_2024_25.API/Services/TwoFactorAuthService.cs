@@ -38,18 +38,25 @@ namespace RS1_2024_25.API.Services
 
             if (user.TwoFactorAuth == null)
             {
-                Console.WriteLine($"[ERROR] User does not have 2FA enabled.");
-                return null;
+                var twoFactorAuth = new TwoFactorAuth
+                {
+                    AccountId = user.AccountID,
+                    AuthTokenHash = tokenHash,
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = expiration
+                };
+                _context.TwoFactorAuths.Add(twoFactorAuth);
             }
-
-  
-            user.TwoFactorAuth.AuthTokenHash = tokenHash;
-            user.TwoFactorAuth.CreatedAt = DateTime.UtcNow;
-            user.TwoFactorAuth.ExpiresAt = expiration;
+            else
+            {
+                user.TwoFactorAuth.AuthTokenHash = tokenHash;
+                user.TwoFactorAuth.CreatedAt = DateTime.UtcNow;
+                user.TwoFactorAuth.ExpiresAt = expiration;
+            }
 
             await _context.SaveChangesAsync();
 
-            await _emailService.SendResetEmailAsync(user.Email, $"Your new 2FA Code: {token}");
+            await _emailService.SendResetEmailAsync(user.Email, $"Your 2FA Code: {token}");
 
             return token;
         }
@@ -58,8 +65,6 @@ namespace RS1_2024_25.API.Services
 
         public async Task<bool> Verify2FAToken(int accountId, string token)
         {
-            Console.WriteLine($"[DEBUG] Verifying 2FA for UserId: {accountId} with Token: {token}");
-
             var twoFactorAuth = await _context.TwoFactorAuths
                 .Where(tfa => tfa.AccountId == accountId)
                 .OrderByDescending(tfa => tfa.CreatedAt)
@@ -67,20 +72,18 @@ namespace RS1_2024_25.API.Services
 
             if (twoFactorAuth == null)
             {
-                Console.WriteLine($"[ERROR] No 2FA record found for UserId: {accountId}");
                 return false;
             }
 
-            Console.WriteLine($"[DEBUG] Stored Hash: {twoFactorAuth.AuthTokenHash}");
-            Console.WriteLine($"[DEBUG] User Input Token: {token}");
+            if (DateTime.UtcNow > twoFactorAuth.ExpiresAt)
+            {
+                return false;
+            }
 
             if (!TokenHasher.VerifyToken(token, twoFactorAuth.AuthTokenHash))
             {
-                Console.WriteLine($"[ERROR] 2FA token mismatch for UserId: {accountId}");
                 return false;
             }
-
-            Console.WriteLine($"[SUCCESS] 2FA verified successfully for UserId: {accountId}");
 
             _context.TwoFactorAuths.Remove(twoFactorAuth);
             await _context.SaveChangesAsync();

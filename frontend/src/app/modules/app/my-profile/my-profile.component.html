@@ -4,7 +4,7 @@
     <!-- User Info -->
     <div class="user-info">
       <div class="profile-image">
-        <img [src]="currentUser?.image || 'assets/images/default-avatar.png'" alt="Profile Picture">
+        <img [src]="currentUser?.userImages?.[0]?.image?.imagePath || 'assets/images/default-avatar.png'" alt="Profile Picture">
       </div>
       <div class="user-details">
         <h3>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h3>
@@ -64,15 +64,98 @@
     </div>
   </div>
 
-  <!-- Right Content Area -->
-  <div class="content-area">
-    <!-- Dynamic content based on activeSection -->
-    <ng-container [ngSwitch]="activeSection">
-      <app-edit-profile *ngSwitchCase="'profile'"></app-edit-profile>
-      <app-my-bookings *ngSwitchCase="'bookings'"></app-my-bookings>
-      <app-favorites *ngSwitchCase="'favorites'"></app-favorites>
-      <app-my-reviews *ngSwitchCase="'reviews'"></app-my-reviews>
-      <app-settings *ngSwitchCase="'settings'"></app-settings>
-    </ng-container>
+  <!-- Main Content -->
+  <div class="profile-content">
+    <!-- Profile Section -->
+    <div *ngIf="activeSection === 'profile'" class="section-content">
+      <h2>Edit Profile</h2>
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" formControlName="email" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" formControlName="phone" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" formControlName="username" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="cityID">City</label>
+          <select id="cityID" formControlName="cityID" class="form-control">
+            <!-- Add city options here -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="genderID">Gender</label>
+          <select id="genderID" formControlName="genderID" class="form-control">
+            <!-- Add gender options here -->
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="!profileForm.valid || isLoading">
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+    </div>
+
+    <!-- Bookings Section -->
+    <div *ngIf="activeSection === 'bookings'" class="section-content">
+      <h2>My Bookings</h2>
+      <div class="bookings-list">
+        <div *ngFor="let booking of bookings" class="booking-item">
+          <div class="booking-details">
+            <h3>Booking #{{ booking.reservationID }}</h3>
+            <p>Start Date: {{ booking.startDate | date }}</p>
+            <p>End Date: {{ booking.endDate | date }}</p>
+            <p>Status: {{ booking.status ? 'Active' : 'Cancelled' }}</p>
+          </div>
+          <button *ngIf="booking.status" (click)="cancelBooking(booking.reservationID)" class="btn btn-danger">
+            Cancel Booking
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travels Section -->
+    <div *ngIf="activeSection === 'bookings'" class="section-content">
+      <h2>My Travels</h2>
+      <div class="travels-list">
+        <div *ngFor="let travel of travels" class="travel-item">
+          <div class="travel-details">
+            <h3>{{ travel.apartment?.name }}</h3>
+            <p>Duration: {{ travel.duration }} days</p>
+            <p>From: {{ travel.startDate | date }}</p>
+            <p>To: {{ travel.endDate | date }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other sections can be added here -->
   </div>
 </div> 

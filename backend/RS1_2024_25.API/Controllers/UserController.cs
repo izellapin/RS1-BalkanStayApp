@@ -23,7 +23,7 @@ namespace RS1_2024_25.API.Controllers
             _DbContext = dbContext;
         }
 
-        [HttpGet]
+        [HttpGet("Get")]
         public ActionResult<List<User>> Get()
         {
             var users = _DbContext.Users
@@ -44,9 +44,7 @@ namespace RS1_2024_25.API.Controllers
             return Ok(users);
         }
 
-
-
-        [HttpGet("{AccountId}")]
+        [HttpGet("Get/{AccountId}")]
         public ActionResult<User> GetById(int AccountId)
         {
             var user = _DbContext.Users
@@ -67,8 +65,6 @@ namespace RS1_2024_25.API.Controllers
             return Ok(user);
         }
 
-
-
         [HttpDelete("{AccountId}")]
         public ActionResult Delete(int AccountId)
         {
@@ -83,9 +79,7 @@ namespace RS1_2024_25.API.Controllers
             return Ok();
         }
 
-
-
-        [HttpPost]
+        [HttpPost("Insert")]
         public ActionResult Insert(UserInsertVM userVM)
         {
             var newUser = new User
@@ -122,10 +116,7 @@ namespace RS1_2024_25.API.Controllers
             return Ok(newUser);
         }
 
-
-
-
-        [HttpPut]
+        [HttpPut("Update")]
         public ActionResult Update(UserUpdateVM userVM)
         {
             var user = _DbContext.Users.Find(userVM.AccountID);
@@ -141,15 +132,12 @@ namespace RS1_2024_25.API.Controllers
             user.GenderID = userVM.GenderID;
             user.CityID = userVM.CityID;
 
-            // Handle image update
             if (!string.IsNullOrEmpty(userVM.ImagePath))
             {
-                // Create new image
                 var image = new Image { ImagePath = userVM.ImagePath };
                 _DbContext.Images.Add(image);
                 _DbContext.SaveChanges();
 
-                // Remove old image if exists
                 var oldUserImage = _DbContext.UserImages
                     .FirstOrDefault(ui => ui.AccountID == user.AccountID);
                 if (oldUserImage != null)
@@ -157,7 +145,6 @@ namespace RS1_2024_25.API.Controllers
                     _DbContext.UserImages.Remove(oldUserImage);
                 }
 
-                // Add new image
                 var userImage = new UserImage
                 {
                     AccountID = user.AccountID,
@@ -186,8 +173,7 @@ namespace RS1_2024_25.API.Controllers
                 if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded");
 
-                // Get user ID from token
-                var userId = GetUserIdFromToken(token); // You'll need to implement this
+                var userId = GetUserIdFromToken(token); 
                 if (userId == null)
                     return BadRequest("Invalid token");
 
@@ -198,21 +184,18 @@ namespace RS1_2024_25.API.Controllers
                 if (user == null)
                     return NotFound($"User not found");
 
-                // Create directory if it doesn't exist
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
                 Directory.CreateDirectory(uploadsFolder);
 
-                // Generate unique filename
                 var fileName = $"profile_{userId}_{DateTime.Now.Ticks}{Path.GetExtension(file.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
-                // Save file
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                // Create new image record
+         
                 var image = new Image
                 {
                     ImagePath = $"/images/{fileName}"
@@ -220,14 +203,12 @@ namespace RS1_2024_25.API.Controllers
                 _DbContext.Images.Add(image);
                 await _DbContext.SaveChangesAsync();
 
-                // Remove old user image if exists
                 var oldUserImage = user.UserImages.FirstOrDefault();
                 if (oldUserImage != null)
                 {
                     _DbContext.UserImages.Remove(oldUserImage);
                 }
 
-                // Create new user image record
                 var userImage = new UserImage
                 {
                     AccountID = userId.Value,
@@ -246,12 +227,10 @@ namespace RS1_2024_25.API.Controllers
 
         private int? GetUserIdFromToken(string token)
         {
-            // Implement your token validation and user ID extraction logic here
-            // This is just a placeholder - implement according to your authentication system
+            
             try
             {
-                // Example: decode JWT token and get user ID
-                // You should implement this according to your token structure
+              
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = tokenHandler.ReadJwtToken(token);
                 var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "userId");

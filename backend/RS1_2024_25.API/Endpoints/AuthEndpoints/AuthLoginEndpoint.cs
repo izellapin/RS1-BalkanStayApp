@@ -44,12 +44,23 @@ namespace RS1_2024_25.API.Endpoints.Auth
             {
                 return Unauthorized(new LoginResponse { Message = "Incorrect password." });
             }
+
+            // Enable 2FA for existing users if not set up
             if (loggedInUser.TwoFactorAuth == null)
             {
-                return Ok(new LoginResponse {Message = "Login failed. Two Factor Auth is null." });
+                var twoFactorAuth = new TwoFactorAuth
+                {
+                    AccountId = loggedInUser.AccountID,
+                    AuthTokenHash = "",
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(5)
+                };
+                _db.TwoFactorAuths.Add(twoFactorAuth);
+                await _db.SaveChangesAsync(cancellationToken);
+                loggedInUser.TwoFactorAuth = twoFactorAuth;
             }
+
             Console.WriteLine($"Generating 2FA token for UserId: {loggedInUser.AccountID}");
-            //var token = await _twoFactorAuthService.Generate2FAToken(loggedInUser.AccountID);
             await _twoFactorAuthService.Generate2FAToken(loggedInUser.AccountID);
             return Ok(new LoginResponse
             {
