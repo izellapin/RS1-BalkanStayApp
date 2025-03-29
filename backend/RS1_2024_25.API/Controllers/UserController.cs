@@ -5,11 +5,15 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data.Models;
+using System.IO;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace RS1_2024_25.API.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _DbContext;
@@ -166,6 +170,101 @@ namespace RS1_2024_25.API.Controllers
             _DbContext.SaveChanges();
 
             return Ok(user);
+        }
+
+        [HttpPost("UploadProfileImage")]
+        [Consumes("multipart/form-data")]  // Specify content type
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UploadProfileImage(
+            [FromForm] IFormFile file,
+            [FromHeader(Name = "my-auth-token")] string token)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return BadRequest("No file uploaded");
+
+                // Get user ID from token
+                var userId = GetUserIdFromToken(token); // You'll need to implement this
+                if (userId == null)
+                    return BadRequest("Invalid token");
+
+                var user = await _DbContext.Users
+                    .Include(u => u.UserImages)
+                    .FirstOrDefaultAsync(u => u.AccountID == userId);
+
+                if (user == null)
+                    return NotFound($"User not found");
+
+                // Create directory if it doesn't exist
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                Directory.CreateDirectory(uploadsFolder);
+
+                // Generate unique filename
+                var fileName = $"profile_{userId}_{DateTime.Now.Ticks}{Path.GetExtension(file.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                // Save file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                // Create new image record
+                var image = new Image
+                {
+                    ImagePath = $"/images/{fileName}"
+                };
+                _DbContext.Images.Add(image);
+                await _DbContext.SaveChangesAsync();
+
+                // Remove old user image if exists
+                var oldUserImage = user.UserImages.FirstOrDefault();
+                if (oldUserImage != null)
+                {
+                    _DbContext.UserImages.Remove(oldUserImage);
+                }
+
+                // Create new user image record
+                var userImage = new UserImage
+                {
+                    AccountID = userId.Value,
+                    ImageID = image.ImageID
+                };
+                _DbContext.UserImages.Add(userImage);
+                await _DbContext.SaveChangesAsync();
+
+                return Ok(new { imagePath = image.ImagePath });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private int? GetUserIdFromToken(string token)
+        {
+            // Implement your token validation and user ID extraction logic here
+            // This is just a placeholder - implement according to your authentication system
+            try
+            {
+                // Example: decode JWT token and get user ID
+                // You should implement this according to your token structure
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(token);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "userId");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    return userId;
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
