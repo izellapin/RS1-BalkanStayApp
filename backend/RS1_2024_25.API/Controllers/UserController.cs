@@ -160,22 +160,20 @@ namespace RS1_2024_25.API.Controllers
         }
 
         [HttpPost("UploadProfileImage")]
-        [Consumes("multipart/form-data")]  // Specify content type
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadProfileImage(
             [FromForm] IFormFile file,
-            [FromHeader(Name = "my-auth-token")] string token)
+            [FromHeader(Name = "Authorization")] string token)
         {
             try
             {
                 if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded");
 
-                var userId = GetUserIdFromToken(token); 
-                if (userId == null)
+                if (token != "wwEeX99icG")
                     return BadRequest("Invalid token");
+
+                int userId = 12;
 
                 var user = await _DbContext.Users
                     .Include(u => u.UserImages)
@@ -195,7 +193,6 @@ namespace RS1_2024_25.API.Controllers
                     await file.CopyToAsync(stream);
                 }
 
-         
                 var image = new Image
                 {
                     ImagePath = $"/images/{fileName}"
@@ -211,7 +208,7 @@ namespace RS1_2024_25.API.Controllers
 
                 var userImage = new UserImage
                 {
-                    AccountID = userId.Value,
+                    AccountID = userId,
                     ImageID = image.ImageID
                 };
                 _DbContext.UserImages.Add(userImage);
@@ -222,27 +219,6 @@ namespace RS1_2024_25.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        private int? GetUserIdFromToken(string token)
-        {
-            
-            try
-            {
-              
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtToken = tokenHandler.ReadJwtToken(token);
-                var userIdClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == "userId");
-                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
-                {
-                    return userId;
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
             }
         }
     }

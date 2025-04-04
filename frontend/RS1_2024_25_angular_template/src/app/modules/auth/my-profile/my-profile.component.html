@@ -3,15 +3,19 @@
   <div class="sidebar">
     <div class="profile-image-section">
       <div class="profile-image-container">
-        <img [src]="profileImageUrl" alt="Profile Picture" class="profile-image">
+        <img [src]="profileImageUrl" alt="Profile Picture" class="profile-image" [class.loading]="isImageLoading">
         <label for="imageInput" class="image-upload-icon">
           <i class="fas fa-camera"></i>
           <input 
             type="file" 
             id="imageInput" 
             accept="image/*"
+            (change)="onImageSelected($event)"
             style="display: none;">
         </label>
+        <div class="loading-spinner" *ngIf="isImageLoading">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
       </div>
     </div>
 
@@ -28,8 +32,8 @@
       <div class="menu-item" [class.active]="selectedMenuItem === 'Payments'" (click)="selectMenuItem('Payments')">
         <i class="fas fa-credit-card"></i> Payments
       </div>
-      <div class="menu-item" [class.active]="selectedMenuItem === 'Activities'" (click)="selectMenuItem('Activities')">
-        <i class="fas fa-hiking"></i> Activities
+      <div class="menu-item" [class.active]="selectedMenuItem === 'My Reviews'" (click)="selectMenuItem('My Reviews')">
+        <i class="fas fa-star"></i> My Reviews
       </div>
     </div>
   </div>
@@ -87,7 +91,7 @@
         </div>
 
         <div class="button-group">
-          <button type="submit" class="btn btn-primary" [disabled]="!profileForm.valid || isLoading">
+          <button type="submit" class="btn btn-save" [disabled]="!profileForm.valid || isLoading">
             Save Changes
           </button>
           <button type="button" class="btn btn-secondary" (click)="loadUserData()">
@@ -188,41 +192,131 @@
       <div class="payments-summary">
         <div class="summary-card">
           <h3>Total Spent</h3>
-          <p>${{ totalSpent }}</p>
+          <p>€{{ totalSpent }}</p>
         </div>
         <div class="summary-card">
           <h3>Upcoming Payments</h3>
-          <p>${{ upcomingPayments }}</p>
+          <p>€{{ upcomingPayments }}</p>
         </div>
       </div>
       <div class="payments-list">
         <div *ngFor="let payment of payments" class="payment-card">
-          <h3>Payment #{{ payment.id }}</h3>
+          <h3>Reservation #{{ payment.reservationID }}</h3>
           <p>Status: {{ payment.status }}</p>
-          <p>Date: {{ payment.date }}</p>
-          <p>Amount: ${{ payment.amount }}</p>
-          <p>Method: {{ payment.method }}</p>
+          <p>Date: {{ payment.date | date:'mediumDate' }}</p>
+          <p>Apartment: {{ payment.apartmentName }}</p>
+          <p>Duration: {{ payment.nights }} nights</p>
+          <p>Price per night: €{{ payment.pricePerNight }}</p>
+          <p class="total-amount">Total Amount: €{{ payment.amount }}</p>
         </div>
       </div>
     </div>
 
-    <!-- Activities Section -->
-    <div *ngIf="selectedMenuItem === 'Activities'">
-      <h2>Activities</h2>
-      <div class="activities-list">
-        <div *ngFor="let activity of activities" class="activity-card">
-          <img [src]="activity.image" [alt]="activity.title">
-          <h3>{{ activity.title }}</h3>
-          <p>{{ activity.description }}</p>
-          <p>Date: {{ activity.date }}</p>
-          <p>Location: {{ activity.location }}</p>
-          <p>Duration: {{ activity.duration }}</p>
-          <div class="activity-actions">
-            <button class="btn btn-primary" (click)="bookActivity(activity.title)">Book Now</button>
-            <button class="btn btn-secondary" (click)="saveActivity(activity.title)">Save for Later</button>
+    <!-- My Reviews Section -->
+    <div *ngIf="selectedMenuItem === 'My Reviews'" class="reviews-section">
+      <h2>My Reviews</h2>
+      
+      <div *ngIf="reviews.length === 0" class="no-reviews">
+        <p>You haven't written any reviews yet.</p>
+      </div>
+
+      <div class="reviews-grid">
+        <div *ngFor="let review of reviews" class="review-card">
+          <div class="review-header">
+            <div class="apartment-info">
+              <h3>{{ review.apartmentName }}</h3>
+              <p class="stay-date">Stayed: {{ review.stayDate | date:'mediumDate' }}</p>
+            </div>
+            <div class="rating">
+              <i class="fas fa-star" *ngFor="let star of [1,2,3,4,5].slice(0, review.rating)"></i>
+              <i class="far fa-star" *ngFor="let star of [1,2,3,4,5].slice(review.rating)"></i>
+            </div>
+          </div>
+
+          <div class="review-content">
+            <p class="review-text">{{ review.comment }}</p>
+          </div>
+
+          <div class="review-actions">
+            <button class="btn btn-edit" (click)="editReview(review.id)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-delete" (click)="deleteReview(review.id)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal" [class.show]="isModalOpen">
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Booking Details</h2>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedBooking && apartmentDetails">
+      <div class="booking-details-grid">
+        <!-- Reservation Details -->
+        <div class="details-section">
+          <h3>Reservation Information</h3>
+          <div class="detail-item">
+            <i class="fas fa-bookmark"></i>
+            <span>Reservation #{{ selectedBooking.reservationID }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-calendar-check"></i>
+            <span>Check-in: {{ selectedBooking.startDate | date:'fullDate' }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-calendar-times"></i>
+            <span>Check-out: {{ selectedBooking.endDate | date:'fullDate' }}</span>
+          </div>
+          <div class="detail-item total-price">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Total Price: €{{ calculateTotalPrice() }}</span>
+          </div>
+        </div>
+
+        <!-- Apartment & Host Details -->
+        <div class="details-section">
+          <h3>Apartment & Host Details</h3>
+          <div class="detail-item">
+            <i class="fas fa-building"></i>
+            <span>{{ apartmentDetails.name }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-globe"></i>
+            <span>{{ apartmentDetails.country }} - {{ apartmentDetails.cityName }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ apartmentDetails.adress }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-user"></i>
+            <span>Host: {{ apartmentDetails.hostName }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-euro-sign"></i>
+            <span>€{{ apartmentDetails.pricePerNight }} per night</span>
+          </div>
+        </div>
+
+        <!-- Description if available -->
+        <div class="apartment-description" *ngIf="apartmentDetails.description">
+          <p>{{ apartmentDetails.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Close</button>
     </div>
   </div>
 </div>
