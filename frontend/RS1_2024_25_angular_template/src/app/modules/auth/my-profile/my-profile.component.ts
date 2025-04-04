@@ -58,11 +58,11 @@ interface Apartment {
   cityName: string;
   adress: string;
   cityId?: number;
-  pricePerNight: number;
   city?: {
     name: string;
     id: number;
   };
+  pricePerNight: number;
 }
 
 interface Travel {
@@ -79,8 +79,22 @@ interface Payment {
   date: string;
   status: string;
   apartmentName: string;
-  nights: number;
   pricePerNight: number;
+  nights: number;
+}
+
+interface Review {
+  id: number;
+  apartmentId: number;
+  rating: number;
+  comment: string;
+  dateCreated: string;
+  apartment?: {
+    name: string;
+    cityName: string;
+    adress: string;
+    image?: string;
+  }
 }
 
 interface ApartmentDetails extends Apartment {
@@ -88,16 +102,6 @@ interface ApartmentDetails extends Apartment {
   hostName: string;
   description?: string;
   pricePerNight: number;
-}
-
-interface Review {
-  id: number;
-  apartmentId: number;
-  apartmentName: string;
-  rating: number;
-  comment: string;
-  stayDate: string;
-  userId: number;
 }
 
 @Component({
@@ -128,33 +132,13 @@ export class MyProfileComponent implements OnInit {
   upcomingPayments: number = 0;
   payments: Payment[] = [];
 
-  // Activities data
-  activities = [
-    {
-      title: 'Mountain Hiking',
-      description: 'Experience the thrill of mountain hiking with our expert guides',
-      date: '2024-06-20',
-      location: 'Alps Mountains',
-      duration: 'Full Day',
-      image: 'assets/activities/hiking.jpg'
-    },
-    {
-      title: 'City Tour',
-      description: 'Explore the city\'s hidden gems and historical landmarks',
-      date: '2024-07-05',
-      location: 'City Center',
-      duration: 'Half Day',
-      image: 'assets/activities/city-tour.jpg'
-    }
-  ];
+  // Reviews data
+  reviews: Review[] = [];
 
   // Add these properties
   selectedBooking: any = null;
   isModalOpen: boolean = false;
-  apartmentDetails: ApartmentDetails | null = null;
-
-  // Add this property
-  reviews: Review[] = [];
+  apartmentDetails: any = null;
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.profileForm = this.fb.group({
@@ -410,15 +394,14 @@ export class MyProfileComponent implements OnInit {
         const parsedToken = JSON.parse(authToken);
         const token = parsedToken.token;
 
-        // First get apartment details
-        this.http.get<ApartmentDetails>(`${this.apiUrl}/Apartment/GetById/${booking.apartmentId}`, {
+        // Fetch apartment details
+        this.http.get<any>(`${this.apiUrl}/Apartment/GetById/${booking.apartmentId}`, {
           headers: { 'my-auth-token': token }
         }).subscribe({
           next: (details) => {
-            // If country is not included in the response, we can set a default
             this.apartmentDetails = {
               ...details,
-              country: 'Bosnia and Herzegovina' // Set default country if not provided by API
+              country: 'Bosnia and Herzegovina' // Set default country
             };
             this.isModalOpen = true;
           },
@@ -429,23 +412,6 @@ export class MyProfileComponent implements OnInit {
         });
       }
     }
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-    this.selectedBooking = null;
-    this.apartmentDetails = null;
-  }
-
-  // Calculate total price for the stay
-  calculateTotalPrice(): number {
-    if (this.selectedBooking && this.apartmentDetails) {
-      const start = new Date(this.selectedBooking.startDate);
-      const end = new Date(this.selectedBooking.endDate);
-      const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
-      return nights * this.apartmentDetails.pricePerNight;
-    }
-    return 0;
   }
 
   // Activity actions
@@ -483,7 +449,7 @@ export class MyProfileComponent implements OnInit {
         }).subscribe({
           next: (reservations) => {
             const today = new Date();
-            // Filter only upcoming reservations for bookings
+            // Filter only UPCOMING reservations for bookings
             this.bookings = reservations.filter(res => 
               res.accountID === userId && 
               new Date(res.startDate) >= today &&
@@ -527,11 +493,11 @@ export class MyProfileComponent implements OnInit {
         }).subscribe({
           next: (reservations) => {
             const today = new Date();
-            // Filter only past reservations for travels
+            // Filter only PAST reservations for travels
             const pastReservations = reservations.filter(res => 
               res.accountID === userId && 
               new Date(res.endDate) < today &&
-              res.status // Only active/completed reservations
+              res.status // Only completed reservations
             );
             
             this.travels = []; // Clear existing travels
@@ -580,7 +546,16 @@ export class MyProfileComponent implements OnInit {
   }
 
   viewTravelDetails(reservationId: number) {
-    console.log('Viewing travel details for reservation:', reservationId);
+    const travel = this.travels.find(t => t.reservationID === reservationId);
+    if (travel) {
+      this.selectedBooking = {
+        reservationID: travel.reservationID,
+        startDate: travel.startDate,
+        endDate: travel.endDate,
+        apartmentId: travel.apartment.apartmentId
+      };
+      this.loadApartmentDetails(travel.apartment.apartmentId);
+    }
   }
 
   loadPayments() {
@@ -609,12 +584,11 @@ export class MyProfileComponent implements OnInit {
                   const endDate = new Date(reservation.endDate);
                   const today = new Date();
 
-                  // Calculate the number of nights
-                  const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+                  // Calculate nights
+                  const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
                   
-                  // Calculate total amount for the stay (60 euros per night)
-                  const pricePerNight = apartment.pricePerNight || 60; // Default to 60 euros if not set
-                  const totalAmount = pricePerNight * nights;
+                  // Calculate total amount using apartment's actual price
+                  const totalAmount = apartment.pricePerNight * nights;
 
                   const payment: Payment = {
                     reservationID: reservation.reservationID,
@@ -622,8 +596,8 @@ export class MyProfileComponent implements OnInit {
                     date: reservation.startDate,
                     status: startDate > today ? 'Upcoming' : 'Completed',
                     apartmentName: apartment.name,
-                    nights: nights,
-                    pricePerNight: pricePerNight
+                    pricePerNight: apartment.pricePerNight,
+                    nights: nights
                   };
 
                   if (startDate <= today) {
@@ -660,7 +634,6 @@ export class MyProfileComponent implements OnInit {
     }
   }
 
-  // Add these methods
   loadUserReviews() {
     const authToken = localStorage.getItem('my-auth-token');
     if (authToken) {
@@ -673,6 +646,16 @@ export class MyProfileComponent implements OnInit {
           headers: { 'my-auth-token': token }
         }).subscribe({
           next: (reviews) => {
+            // For each review, fetch apartment details
+            reviews.forEach(review => {
+              this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${review.apartmentId}`, {
+                headers: { 'my-auth-token': token }
+              }).subscribe({
+                next: (apartment) => {
+                  review.apartment = apartment;
+                }
+              });
+            });
             this.reviews = reviews;
           },
           error: (error) => {
@@ -713,5 +696,45 @@ export class MyProfileComponent implements OnInit {
         });
       }
     }
+  }
+
+  private loadApartmentDetails(apartmentId: number) {
+    const authToken = localStorage.getItem('my-auth-token');
+    if (authToken) {
+      const parsedToken = JSON.parse(authToken);
+      const token = parsedToken.token;
+
+      this.http.get<ApartmentDetails>(`${this.apiUrl}/Apartment/GetById/${apartmentId}`, {
+        headers: { 'my-auth-token': token }
+      }).subscribe({
+        next: (details) => {
+          this.apartmentDetails = {
+            ...details,
+            country: 'Bosnia and Herzegovina' // Set default country if not provided by API
+          };
+          this.isModalOpen = true;
+        },
+        error: (error) => {
+          console.error('Error loading apartment details:', error);
+          this.errorMessage = 'Failed to load apartment details';
+        }
+      });
+    }
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.selectedBooking = null;
+    this.apartmentDetails = null;
+  }
+
+  calculateTotalPrice(): number {
+    if (this.selectedBooking && this.apartmentDetails) {
+      const start = new Date(this.selectedBooking.startDate);
+      const end = new Date(this.selectedBooking.endDate);
+      const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
+      return nights * this.apartmentDetails.pricePerNight;
+    }
+    return 0;
   }
 }
