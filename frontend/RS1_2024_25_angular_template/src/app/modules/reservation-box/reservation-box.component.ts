@@ -7,17 +7,22 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MyAuthService } from '../../services/auth-services/my-auth.service';
+import {NgClass} from '@angular/common';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-reservation-box',
   templateUrl: './reservation-box.component.html',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
+    NgClass,
   ],
   styleUrls: ['./reservation-box.component.css']
 })
@@ -28,6 +33,12 @@ export class ReservationBoxComponent implements OnInit {
   minDate: Date = new Date();
   maxCheckOutDate: Date | null = null;
   minCheckOutDate: Date | null = null;
+  message: string | null = null;
+  messageType: 'error' | 'success' | null = null;
+  confirmMode: boolean = false;
+  pendingStartDate: Date | null = null;
+  pendingEndDate: Date | null = null;
+
 
   constructor(
     private fb: FormBuilder,
@@ -129,31 +140,71 @@ export class ReservationBoxComponent implements OnInit {
       this.reservationForm.controls['endDate'].setValue(null); // resetuje endate ako je manji od start
     }
   }
+  cancelConfirmation() {
+    this.confirmMode = false;
+    this.pendingStartDate = null;
+    this.pendingEndDate = null;
+    this.reservationForm.reset();
+    this.minCheckOutDate = null;
+    this.maxCheckOutDate = null;
+  }
+
+
+  confirmReservation() {
+    const loggedInUser = this.authService.getMyAuthInfo();
+    if (!loggedInUser || !this.pendingStartDate || !this.pendingEndDate) {
+      this.message = 'Something went wrong.';
+      this.messageType = 'error';
+      return;
+    }
+    const reservation: Reservation = {
+      reservationID: 0,
+      accountID: loggedInUser.userId,
+      apartmentId: this.apartmentId,
+      startDate: this.pendingStartDate.toISOString(),
+      endDate: this.pendingEndDate.toISOString(),
+      status: true
+    };
+
+    this.reservationService.createReservation(reservation).subscribe(() => {
+      this.message = 'Reservation successful! Find it on your profile.';
+      this.messageType = 'success';
+      this.reservationForm.reset();
+      this.confirmMode = false;
+      this.pendingStartDate = null;
+      this.pendingEndDate = null;
+      this.minCheckOutDate = null;
+      this.maxCheckOutDate = null;
+
+
+      setTimeout(() => {
+        this.message = null;
+        this.messageType = null;
+      }, 5000);
+    });
+  }
 
   submitReservation() {
+    this.message = null;
+    this.messageType = null;
+
     if (this.reservationForm.valid) {
       const startDate = this.normalizeDate(this.reservationForm.value.startDate);
       const endDate = this.normalizeDate(this.reservationForm.value.endDate);
 
-      // account id mora biti od prijavljenog korisnika
       const loggedInUser = this.authService.getMyAuthInfo();
       if (!loggedInUser) {
-        alert('You must be logged in to make a reservation.');
+        this.message = 'You must be logged in to make a reservation.';
+        this.messageType = 'error';
         return;
       }
 
-      const reservation: Reservation = {
-        reservationID: 0,
-        accountID: loggedInUser.userId,
-        apartmentId: this.apartmentId,
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        status: true
-      };
-
-      this.reservationService.createReservation(reservation).subscribe(() => {
-        alert('Reserved!');
-      });
+      this.confirmMode = true;
+      this.pendingStartDate = startDate;
+      this.pendingEndDate = endDate;
     }
   }
+
+
+
 }

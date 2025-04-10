@@ -17,6 +17,24 @@
       <mat-datepicker #endPicker></mat-datepicker>
     </mat-form-field>
 
-    <button mat-button type="submit" [disabled]="reservationForm.invalid" class="submit-btn">Make a reservation</button>
+
+  <div *ngIf="message" [ngClass]="{'error-message': messageType === 'error', 'success-message': messageType === 'success'}">
+    {{ message }}
+  </div>
+
+  <div *ngIf="confirmMode" class="confirmation-box">
+    <p class="confirm-text">
+      Confirm reservation from <b>{{ pendingStartDate | date:'dd-MM-yyyy' }} </b> to <b> {{ pendingEndDate | date:'dd-MM-yyyy' }}</b>?
+    </p>
+    <button type="button" class="confirm-btn" (click)="confirmReservation()">Confirm</button>
+    <button type="button" class="cancel-btn" (click)="cancelConfirmation()">Cancel</button>
+  </div>
+
+  <div *ngIf="!confirmMode">
+    <button type="submit" class="submit-btn" [disabled]="reservationForm.invalid">Make a reservation</button>
+  </div>
+
+
   </form>
+
 </div>
