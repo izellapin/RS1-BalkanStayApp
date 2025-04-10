@@ -17,6 +17,10 @@ h2, h3 {
 
 .name {
   font-size: 30px;
+  text-align: center;
+}
+.adress,.country {
+  text-align: center;
 }
 
 h2 {
@@ -32,6 +36,15 @@ h3 {
 p {
   font-size: 18px;
   line-height: 1.5;
+}
+
+.container-main{
+  width: 80%;
+  border-radius: 10px;
+  margin: auto;
+  border: 2px solid rgba(148, 168, 184, 0.16);
+  box-shadow: 3px 3px 3px rgba(148, 168, 184, 0.16);
+
 }
 
 .image-gallery {
@@ -80,11 +93,10 @@ p {
   margin-top: 20px;
   padding: 15px;
   background: rgba(124, 152, 179, 0.55);
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   font-size: 20px;
   color: #1a2e35;
   text-align: center;
+
 }
 
 .price-container {
@@ -92,9 +104,7 @@ p {
   padding: 15px;
   background: #1a2e35;
   text-align: center;
-  border-radius: 10px;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .price {
@@ -127,14 +137,12 @@ strong {
   margin: 20px auto;
   padding: 20px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* (toiletries, amenities, rules) + reservation form */
 .apartment-details-container {
   display: grid;
-  grid-template-columns: 980px 600px;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   max-width: 1600px;
   margin: 0 auto;
@@ -143,9 +151,9 @@ strong {
 }
 
 .info-column {
+  max-height: 500px;
   background: #ffffff;
   padding: 15px;
-  border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -170,21 +178,72 @@ li {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.reservation-column {
+.reviews-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.reviews-column {
   background: #ffffff;
-  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.reviews-column h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.review {
+  padding: 10px;
+  background: rgba(124, 152, 179, 0.13);
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.review p {
+  margin: 5px 0;
+}
+
+.review-date {
+  font-size: 14px;
+  color: #888;
+}
+
+.reservation-column {
+  max-height: 500px;
+  background: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .apartment-details-container {
-    grid-template-columns: 1fr;
-  }
-  .image-gallery {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  }
-  .info-grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
+.leave-review{
+  float: right;
+}
+button.review-btn {
+  font-size: 16px;
+  font-weight: bold;
+  background: rgb(31, 56, 80);
+  color: #ffffff;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+button.review-btn:disabled {
+  background-color: #d6d6d6;
+  cursor: not-allowed;
+}
+
+button.review-btn:hover:not(:disabled) {
+  transform: scale(1.05);
 }

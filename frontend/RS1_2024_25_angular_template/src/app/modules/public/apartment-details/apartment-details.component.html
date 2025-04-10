@@ -1,8 +1,9 @@
-
 <div *ngIf="apartment">
   <h2 class="name">{{ apartment?.name }}</h2>
-  <p class="adress"> {{ apartment?.adress }}</p>
+  <p class="adress">{{ apartment?.adress }}</p>
   <p class="country">{{ apartment?.countryName }}</p>
+
+  <div class="container-main">
 
   <div class="image-gallery">
     <div class="main-image">
@@ -23,9 +24,8 @@
   <p class="description">{{ apartment?.description }}</p>
 
   <div class="price-container">
-    <p class="price"> {{ apartment?.pricePerNight }} € per night</p>
+    <p class="price">{{ apartment?.pricePerNight }} € per night</p>
   </div>
-
 
   <div class="apartment-details-container">
     <div class="info-column">
@@ -43,31 +43,38 @@
       </ul>
     </div>
 
+    <div class="reviews-column">
+      <div *ngIf="isLoggedIn()" class="leave-review">
+        <button (click)="openReviewForm()" class="review-btn">Leave a Review</button>
+      </div>
+
+      <h3>REVIEWS</h3>
+
+      <div *ngIf="reviews.length > 0; else noReviews">
+        <ul>
+          <li *ngFor="let review of reviews" class="review">
+            <p><strong>{{ review.account.firstName }} {{ review.account.lastName }}</strong></p>
+            <p>Rating: {{ review.rating }}</p>
+            <p>{{ review.comment }}</p>
+            <p class="review-date">{{ review.date | date: 'mediumDate' }}</p>
+          </li>
+        </ul>
+      </div>
+
+      <ng-template #noReviews>
+        <p>No reviews available for this apartment.</p>
+      </ng-template>
+
+
+    </div>
+
+
     <div class="reservation-column">
       <app-reservation-box [apartmentId]="apartment.apartmentId"></app-reservation-box>
     </div>
   </div>
 
-  <div class="reviews-section">
-    <h3>Reviews</h3>
-
-    <div *ngIf="reviews.length > 0; else noReviews">
-      <div *ngFor="let review of reviews" class="review">
-        <p><strong>{{ review.account.firstName }} {{ review.account.lastName }}</strong></p>
-        <p>Rating: {{ review.rating }}</p>
-        <p>{{ review.comment }}</p>
-      </div>
-    </div>
-
-    <ng-template #noReviews>
-      <p>No reviews available for this apartment.</p>
-    </ng-template>
-  </div>
-
-  <!-- Forma za ostavljanje recenzije (ako je korisnik prijavljen) -->
-  <div *ngIf="isLoggedIn()" class="leave-review">
-    <button (click)="openReviewForm()">Leave a Review</button>
-  </div>
+</div>
 </div>
 
 <app-footer></app-footer>

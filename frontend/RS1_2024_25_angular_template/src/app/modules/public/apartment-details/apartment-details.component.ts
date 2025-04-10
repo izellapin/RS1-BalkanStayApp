@@ -64,15 +64,14 @@ export class ApartmentDetailsComponent implements OnInit {
     return loggedInUser != null;
   }
   openReviewForm(): void {
-    // Logika za otvaranje forme za recenziju
-    // Na primer, možete postaviti promenljive za prikazivanje forme
+
     console.log('Opening review form');
   }
 
 
 
   loadReviews(): void {
-    if (this.apartmentId > 0) { // Proverite da `apartmentId` nije 0
+    if (this.apartmentId > 0) {
       this.reviewService.getReviewsForApartment(this.apartmentId).subscribe(reviews => {
           this.reviews = reviews;
         },
@@ -97,7 +96,7 @@ export class ApartmentDetailsComponent implements OnInit {
         this.loading = false;
         console.log("Apartment data loaded:", this.apartment);
 
-        // Postavljanje prve slike kao glavne kada podaci stignu
+
         if (this.apartment?.imagePaths?.length > 0) {
           this.selectedImage = this.apartment.imagePaths[0];
           console.log("Main image selected:", this.selectedImage);
