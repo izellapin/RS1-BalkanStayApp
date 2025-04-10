@@ -19,6 +19,8 @@ export class ApartmentDetailsComponent implements OnInit {
   errorMessage: string | null = null;
   selectedImage: string = '';
   reviews: any[] = [];
+  isReviewFormVisible: boolean = false;
+
 
 
   constructor(
@@ -64,11 +66,12 @@ export class ApartmentDetailsComponent implements OnInit {
     return loggedInUser != null;
   }
   openReviewForm(): void {
-
-    console.log('Opening review form');
+    this.isReviewFormVisible = true;
   }
 
-
+  closeReviewForm(): void {
+    this.isReviewFormVisible = false;
+  }
 
   loadReviews(): void {
     if (this.apartmentId > 0) {

@@ -12,8 +12,8 @@ export class ReviewService {
   constructor(private http: HttpClient) {}
 
   // POST metoda za slanje recenzije
-  submitReview(review: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, review);
+  addReview(review: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/Insert`, review);
   }
 
   // GET metoda za preuzimanje recenzija za apartman

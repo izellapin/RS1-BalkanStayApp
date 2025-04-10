@@ -48,13 +48,28 @@
         <button (click)="openReviewForm()" class="review-btn">Leave a Review</button>
       </div>
 
+      <div class="modal-overlay" *ngIf="isReviewFormVisible">
+        <div class="modal-content">
+          <app-review
+            [apartmentId]="apartment.apartmentId"
+            (close)="closeReviewForm()">
+          </app-review>
+        </div>
+      </div>
       <h3>REVIEWS</h3>
 
       <div *ngIf="reviews.length > 0; else noReviews">
         <ul>
           <li *ngFor="let review of reviews" class="review">
             <p><strong>{{ review.account.firstName }} {{ review.account.lastName }}</strong></p>
-            <p>Rating: {{ review.rating }}</p>
+
+            <div class="star-rating">
+             <span *ngFor="let star of [1, 2, 3, 4, 5]" class="star"
+                   [class.filled]="star <= review.rating">
+                    ★
+             </span>
+            </div>
+
             <p>{{ review.comment }}</p>
             <p class="review-date">{{ review.date | date: 'mediumDate' }}</p>
           </li>

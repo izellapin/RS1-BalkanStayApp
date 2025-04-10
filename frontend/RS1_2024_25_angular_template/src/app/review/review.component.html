@@ -1,12 +1,29 @@
 <div class="review-form">
   <h3>Leave a Review</h3>
   <form (ngSubmit)="submitReview()" [formGroup]="reviewForm">
-    <label for="rating">Rating (1-5):</label>
-    <input type="number" id="rating" formControlName="rating" min="1" max="5">
+    <label>Rating:</label>
 
-    <label for="comment">Your Review:</label>
-    <textarea id="comment" formControlName="comment"></textarea>
+    <div class="star-rating">
+  <span
+    *ngFor="let star of stars; let i = index"
+    class="star"
+    [class.filled]="(i + 1) <= (hoverRating || reviewForm.get('rating')?.value)"
+    (click)="setRating(i + 1)"
+    (mouseenter)="hoverRating = i + 1"
+    (mouseleave)="hoverRating = 0"
+  >
+    &#9733;
+  </span>
+    </div>
 
-    <button type="submit" [disabled]="reviewForm.invalid">Submit Review</button>
+    <br>
+
+    <label for="comment">Comment:</label>
+    <br>
+    <textarea id="comment" formControlName="comment" class="comment"></textarea>
+
+    <button type="submit" [disabled]="reviewForm.invalid" class="submit-btn">Submit Review</button>
   </form>
+  <button (click)="close.emit()" type="button" class="close-btn">✖</button>
+
 </div>
