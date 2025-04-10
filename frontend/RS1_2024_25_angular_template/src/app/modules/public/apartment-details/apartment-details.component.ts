@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApartmentService } from '../../../services/apartment/apartment.service';
 import { Apartment } from '../../../models/apartment.model';
+import {ReviewService} from '../../../services/review/review.service';
+import { MyAuthService } from '../../../services/auth-services/my-auth.service';
+
 
 @Component({
   selector: 'app-apartment-details',
@@ -15,14 +18,33 @@ export class ApartmentDetailsComponent implements OnInit {
   loading: boolean = false;
   errorMessage: string | null = null;
   selectedImage: string = '';
+  reviews: any[] = [];
+
 
   constructor(
     private route: ActivatedRoute,
-    private apartmentService: ApartmentService
+    private apartmentService: ApartmentService,
+    private reviewService: ReviewService,
+    private authService: MyAuthService
   ) { }
 
   ngOnInit(): void {
 
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id && !isNaN(+id)) {
+        this.apartmentId = +id;
+        console.log("Apartment ID:", this.apartmentId);
+        this.getApartmentDetails();
+        this.loadReviews();
+      } else {
+        console.error('Invalid apartment ID');
+        this.errorMessage = 'Invalid apartment ID';
+      }
+    });
+
+
+    this.loadReviews();
     this.apartmentId = Number(this.route.snapshot.paramMap.get('id'));
     console.log("Apartment ID:", this.apartmentId);
 
@@ -37,6 +59,31 @@ export class ApartmentDetailsComponent implements OnInit {
       }
     });
   }
+  isLoggedIn(): boolean {
+    const loggedInUser = this.authService.getMyAuthInfo();
+    return loggedInUser != null;
+  }
+  openReviewForm(): void {
+    // Logika za otvaranje forme za recenziju
+    // Na primer, možete postaviti promenljive za prikazivanje forme
+    console.log('Opening review form');
+  }
+
+
+
+  loadReviews(): void {
+    if (this.apartmentId > 0) { // Proverite da `apartmentId` nije 0
+      this.reviewService.getReviewsForApartment(this.apartmentId).subscribe(reviews => {
+          this.reviews = reviews;
+        },
+        (error) => {
+          console.error('Error fetching reviews:', error);
+        });
+    } else {
+      console.warn('Invalid apartment ID, cannot load reviews.');
+    }
+  }
+
 
   selectImage(imagePath: string) {
     this.selectedImage = imagePath;

@@ -58,6 +58,22 @@ namespace RS1_2024_25.API.Controllers
             return Ok(reviews);
         }
 
+        [HttpGet("{apartmentId}")]
+        public ActionResult<List<Review>> GetByApartment (int apartmentId)
+        {
+            var reviews = _DbContext.Reviews
+                                    .Include(x => x.Apartment)
+                                    .Include(x => x.Account)                                               
+                                    .Where(x => x.ApartmentId == apartmentId) // Filtriramo recenzije prema ApartmentId
+                                    .ToList();
+
+            if (reviews == null || reviews.Count == 0)
+            {
+                return NotFound(); // Vraća 404 ako nema recenzija za ovaj apartman
+            }
+
+            return Ok(reviews); // Vraća recenzije u odgovoru
+        }
 
 
 

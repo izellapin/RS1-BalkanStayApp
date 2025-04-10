@@ -27,6 +27,7 @@ import {ReservationBoxComponent} from '../reservation-box/reservation-box.compon
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ReviewComponent} from '../../review/review.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
     SharedModule,
     BsDatepickerModule.forRoot(),
     ReactiveFormsModule,
-    ReservationBoxComponent
+    ReservationBoxComponent,
+    ReviewComponent
   ],
   exports: [
     AboutComponent,

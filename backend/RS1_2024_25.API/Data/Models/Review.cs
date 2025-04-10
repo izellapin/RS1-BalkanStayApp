@@ -16,7 +16,6 @@ namespace RS1_2024_25.API.Data
         [ForeignKey(nameof(Account))]
         public int AccountID { get; set; } // Koristi se AccountID, jer User nasleđuje Account
         
-        [JsonIgnore]
         public Account Account { get; set; }
 
         public string Rating { get; set; }

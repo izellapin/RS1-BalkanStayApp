@@ -20,10 +20,12 @@ import { FormsModule } from '@angular/forms';
 
 import {AuthRoutingModule} from './modules/auth/auth-routing.module';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ReviewComponent } from './review/review.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+
 
 
   ],
@@ -42,6 +44,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     FormsModule,
     AuthRoutingModule,
     BsDatepickerModule.forRoot(),
+    ReviewComponent,
 
   ],
   providers: [
