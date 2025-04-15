@@ -84,52 +84,6 @@
     <div #scrollAnchor style="height: 1px; background: transparent;"></div>
   </div>
 </div>
-  <div class="part4">
-    <div class="travel-tabel">
-      <div class="separator">
-        <div class="line-black"></div>
-        <div class="line-green"></div>
-        <div class="line-black"></div>
-      </div>
-      <div class="travel-header">
-        <h1>4 Our Travel Plans</h1>
-        <p>
-          Vero justo sed sed vero clita amet. Et justo vero sea diam elitr amet
-          ipsum eos ipsum clita duo sed. Sed vero sea diam erat vero elitr sit
-          clita.
-        </p>
-        <div class="separator">
-          <div class="line-black"></div>
-          <div class="line-green"></div>
-          <div class="line-black"></div>
-        </div>
-      </div>
-      <table class="styled-table">
-        <thead class="travel-table-header">
-        <tr>
-          <th>Travel ID</th>
-          <th>Check in</th>
-          <th>Check out</th>
-          <th>Days</th>
-          <th>Available spots</th>
-          <th>Price</th>
-          <th>Reserve</th>
-        </tr>
-        </thead>
-        <tbody id="putovanjaTabela" *ngIf="odabranaDrzava">
-        <tr *ngFor="let o of odabranaDrzava.planiranaPutovanja;let rbPolaska = index">
-          <td>ID {{o.idPutovanje}}</td>
-          <td>{{o.datumPol}}</td>
-          <td>{{o.datumPov}}</td>
-          <td>{{o.countSlobodnoMjesta}}</td>
-          <td>{{o.brojDana}}</td>
-          <td>{{o.cijenaPoOsobiEur}} €</td>
-          <td><button (click)="K3_OdaberiPutovanje(o)">K3 Odaberi putovanje</button></td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
   <div class="part5">
     <div class="city-weather">
       <div class="city-weather-wrapper">
@@ -149,70 +103,6 @@
         <div class="city-card-wrapper" id="vrijemeGradova">
         </div>
       </div>
-    </div>
-  </div>
-  <div class="part6">
-    <div class="contact">
-      <div class="booking-header">
-        <h1>6 Book your destination</h1>
-      </div>
-      <div id="contact-form">
-        <div class="container2">
-          <div class="item">
-            <label for="drzavaText">Country</label>
-            <input disabled id="drzavaText" type="text" [value]="odabranaDrzava!=null?odabranaDrzava.drzava:''"/>
-          </div>
-          <div class="item">
-            <label for="datumPolaska">Check in</label>
-            <input disabled id="datumPolaska" type="text"/>
-          </div>
-        </div>
-        <hr/>
-        <div class="container2">
-          <div class="item">
-            <label class="bold" for="brojGostiju">Number of guests</label>
-            <input id="brojGostiju" max="5" min="1" oninput="promjenaBrojaGostiju()" type="number" value="1"/>
-          </div>
-          <div class="item">
-            <label for="cijenaPoGostu">Price per guest</label>
-            <input disabled id="cijenaPoGostu" type="text"/>
-          </div>
-        </div>
-        <div class="container2">
-          <div class="item"></div>
-          <div class="item">
-            <label class="bold" for="ukupnaCijena">Total price</label>
-            <input disabled id="ukupnaCijena" type="text"/>
-          </div>
-        </div>
-        <hr/>
-        <div id="gosti"></div>
-        <br/>
-        <br/>
-        <div class="container3">
-          <div class="item-container">
-            <div class="item">
-              <label for="brojPasosa">ID number</label>
-              <input id="brojPasosa" oninput="provjeriBrojPasosa()"/>
-            </div>
-            <div class="item">
-              <label for="datumVazenjaPasosa">Valid date</label>
-              <input id="datumVazenjaPasosa" oninput="provjeriPasos()"/>
-            </div>
-          </div>
-          <div class="item-container">
-            <div class="item">
-              <label for="email">E-mail</label>
-              <input id="email" oninput="provjeriEmail()"/>
-            </div>
-            <div class="item">
-              <label for="phone">Phone number</label>
-              <input id="phone" oninput="provjeriTelefon()"/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="button" onclick="posalji()">Send</button>
     </div>
   </div>
 <app-footer></app-footer>

@@ -21,7 +21,7 @@ namespace RS1_2024_25.API.Services
                 {
                     From = new MailAddress(_senderEmail),
                     Subject = "Password Reset Request",
-                    Body = $"<p>Click the link below to reset your password:</p><p><a href='{resetUrl}'>{resetUrl}</a></p>",
+                    Body = $"<p>Click the link below:</p><p><a href='{resetUrl}'>{resetUrl}</a></p>",
                     IsBodyHtml = true
                 };
 
