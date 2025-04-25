@@ -1,4 +1,5 @@
 <!-- Main content -->
+<app-header></app-header>
 <div class="main-container" [class.content-blur]="isModalOpen">
   <div class="profile-page-container">
     <!-- Left Sidebar -->
@@ -8,9 +9,9 @@
           <img [src]="profileImageUrl" alt="Profile Picture" class="profile-image" [class.loading]="isImageLoading">
           <label for="imageInput" class="image-upload-icon">
             <i class="fas fa-camera"></i>
-            <input 
-              type="file" 
-              id="imageInput" 
+            <input
+              type="file"
+              id="imageInput"
               accept="image/*"
               (change)="onImageSelected($event)"
               style="display: none;">
@@ -138,7 +139,7 @@
       <!-- My Bookings Section -->
       <div *ngIf="selectedMenuItem === 'My Bookings'" class="bookings-section">
         <h2>My Bookings</h2>
-        
+
         <div *ngIf="bookings.length === 0" class="no-bookings">
           <p>You don't have any bookings yet.</p>
         </div>
@@ -147,7 +148,7 @@
           <div *ngFor="let booking of bookings" class="booking-card">
             <div class="booking-details">
               <h3>Reservation #{{ booking.reservationID }}</h3>
-              
+
               <div class="booking-info">
                 <div class="info-item">
                   <i class="fas fa-calendar-check"></i>
@@ -176,7 +177,7 @@
                 <button class="btn btn-primary" (click)="viewBookingDetails(booking.reservationID)">
                   View Details
                 </button>
-                <button *ngIf="booking.status" 
+                <button *ngIf="booking.status"
                         class="btn btn-danger"
                         (click)="cancelBooking(booking.reservationID)">
                   Cancel Booking
@@ -216,7 +217,7 @@
       <!-- My Reviews Section -->
       <div *ngIf="selectedMenuItem === 'My Reviews'" class="reviews-section">
         <h2>My Reviews</h2>
-        
+
         <div *ngIf="reviews.length === 0" class="no-reviews">
           <p>You haven't written any reviews yet.</p>
         </div>
@@ -227,7 +228,7 @@
             <div class="apartment-info">
               <h3>{{ review.apartment?.name }}</h3>
               <p class="location">
-                <i class="fas fa-map-marker-alt"></i> 
+                <i class="fas fa-map-marker-alt"></i>
                 {{ review.apartment?.cityName }} - {{ review.apartment?.adress }}
               </p>
             </div>
@@ -244,9 +245,6 @@
 
             <!-- Actions -->
             <div class="review-actions">
-              <button class="btn btn-edit" (click)="editReview(review.id)">
-                <i class="fas fa-edit"></i> Edit
-              </button>
               <button class="btn btn-delete" (click)="deleteReview(review.id)">
                 <i class="fas fa-trash"></i> Delete
               </button>

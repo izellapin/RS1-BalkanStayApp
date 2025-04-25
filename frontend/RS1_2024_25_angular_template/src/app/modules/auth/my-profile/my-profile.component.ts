@@ -86,6 +86,7 @@ interface Payment {
 interface Review {
   id: number;
   apartmentId: number;
+  accountID: any;
   rating: number;
   comment: string;
   dateCreated: string;
@@ -249,7 +250,7 @@ export class MyProfileComponent implements OnInit {
       if (authToken) {
         const parsedToken = JSON.parse(authToken);
         const userId = parsedToken.myAuthInfo.userId;
-        
+
         const updateData: UserUpdateRequest = {
           accountID: Number(userId),
           username: this.profileForm.get('username')?.value || '',
@@ -304,7 +305,7 @@ export class MyProfileComponent implements OnInit {
         const parsedToken = JSON.parse(authToken);
         const userId = parsedToken.myAuthInfo.userId;
         const token = parsedToken.token;
-        
+
         if (!token) {
           this.errorMessage = 'Authentication token not found';
           this.isLoading = false;
@@ -347,7 +348,7 @@ export class MyProfileComponent implements OnInit {
             } else {
               this.profileImageUrl = this.apiUrl + '/images/default.jpg';
             }
-            
+
             this.isLoading = false;
           },
           error: (error) => {
@@ -388,7 +389,7 @@ export class MyProfileComponent implements OnInit {
     const booking = this.bookings.find(b => b.reservationID === reservationId);
     if (booking) {
       this.selectedBooking = booking;
-      
+
       const authToken = localStorage.getItem('my-auth-token');
       if (authToken) {
         const parsedToken = JSON.parse(authToken);
@@ -429,6 +430,18 @@ export class MyProfileComponent implements OnInit {
     this.profileImageUrl = this.apiUrl + '/images/default.jpg';
   }
 
+  private async checkBackendAvailability() {
+    try {
+      const response = await this.http.get(`${this.apiUrl}/health`).toPromise();
+      console.log('Backend is available:', response);
+      return true;
+    } catch (error) {
+      console.error('Backend is not available:', error);
+      this.errorMessage = 'Backend server is not available. Please try again later.';
+      return false;
+    }
+  }
+
   private loadUserBookings() {
     const authToken = localStorage.getItem('my-auth-token');
     if (authToken) {
@@ -436,30 +449,44 @@ export class MyProfileComponent implements OnInit {
         const parsedToken = JSON.parse(authToken);
         const userId = parsedToken.myAuthInfo.userId;
         const token = parsedToken.token;
-        
-        if (!token) {
-          this.errorMessage = 'Authentication token not found';
-          return;
-        }
 
         this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`, {
-          headers: {
-            'my-auth-token': token
-          }
+          headers: { 'my-auth-token': token }
         }).subscribe({
           next: (reservations) => {
             const today = new Date();
-            // Filter only UPCOMING reservations for bookings
-            this.bookings = reservations.filter(res => 
-              res.accountID === userId && 
+            const upcomingReservations = reservations.filter(res =>
+              res.accountID === userId &&
               new Date(res.startDate) >= today &&
-              res.status // Only active reservations
+              res.status
             );
 
-            // Sort bookings by date (soonest first)
-            this.bookings.sort((a, b) => 
-              new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-            );
+            const bookings: any[] = [];
+
+            upcomingReservations.forEach(reservation => {
+              this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${reservation.apartmentId}`, {
+                headers: { 'my-auth-token': token }
+              }).subscribe({
+                next: (apartment) => {
+                  bookings.push({
+                    ...reservation,
+                    apartment: apartment
+                  });
+
+                  this.bookings = bookings.sort((a, b) =>
+                    new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+                  );
+                },
+                error: (error) => {
+                  console.error('Error loading apartment for booking:', error);
+                  this.errorMessage = 'Failed to load apartment details';
+                }
+              });
+            });
+
+            if (upcomingReservations.length === 0) {
+              this.bookings = [];
+            }
           },
           error: (error) => {
             console.error('Error loading bookings:', error);
@@ -473,6 +500,8 @@ export class MyProfileComponent implements OnInit {
     }
   }
 
+
+
   private loadUserTravels() {
     const authToken = localStorage.getItem('my-auth-token');
     if (authToken) {
@@ -480,58 +509,51 @@ export class MyProfileComponent implements OnInit {
         const parsedToken = JSON.parse(authToken);
         const userId = parsedToken.myAuthInfo.userId;
         const token = parsedToken.token;
-        
-        if (!token) {
-          this.errorMessage = 'Authentication token not found';
-          return;
-        }
 
         this.http.get<Reservation[]>(`${this.apiUrl}/Reservation/Get`, {
-          headers: {
-            'my-auth-token': token
-          }
+          headers: { 'my-auth-token': token }
         }).subscribe({
           next: (reservations) => {
             const today = new Date();
-            // Filter only PAST reservations for travels
-            const pastReservations = reservations.filter(res => 
-              res.accountID === userId && 
+            const pastReservations = reservations.filter(res =>
+              res.accountID === userId &&
               new Date(res.endDate) < today &&
-              res.status // Only completed reservations
+              res.status
             );
-            
-            this.travels = []; // Clear existing travels
+
+            const travels: Travel[] = [];
 
             pastReservations.forEach(reservation => {
               this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${reservation.apartmentId}`, {
-                headers: {
-                  'my-auth-token': token
-                }
+                headers: { 'my-auth-token': token }
               }).subscribe({
                 next: (apartment) => {
                   const start = new Date(reservation.startDate);
                   const end = new Date(reservation.endDate);
                   const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
 
-                  const travel: Travel = {
+                  travels.push({
                     reservationID: reservation.reservationID,
                     startDate: reservation.startDate,
                     endDate: reservation.endDate,
                     duration: duration,
                     apartment: apartment
-                  };
+                  });
 
-                  this.travels.push(travel);
-                  // Sort travels by date (most recent first)
-                  this.travels.sort((a, b) => 
+                  this.travels = travels.sort((a, b) =>
                     new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
                   );
                 },
                 error: (error) => {
-                  console.error('Error loading apartment details:', error);
+                  console.error('Error loading apartment for travel:', error);
+                  this.errorMessage = 'Failed to load apartment details';
                 }
               });
             });
+
+            if (pastReservations.length === 0) {
+              this.travels = [];
+            }
           },
           error: (error) => {
             console.error('Error loading travels:', error);
@@ -544,6 +566,7 @@ export class MyProfileComponent implements OnInit {
       }
     }
   }
+
 
   viewTravelDetails(reservationId: number) {
     const travel = this.travels.find(t => t.reservationID === reservationId);
@@ -586,7 +609,7 @@ export class MyProfileComponent implements OnInit {
 
                   // Calculate nights
                   const nights = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
-                  
+
                   // Calculate total amount using apartment's actual price
                   const totalAmount = apartment.pricePerNight * nights;
 
@@ -607,11 +630,11 @@ export class MyProfileComponent implements OnInit {
                   }
 
                   payments.push(payment);
-                  
+
                   // Update the component properties
                   this.totalSpent = totalSpent;
                   this.upcomingPayments = upcomingPayments;
-                  this.payments = payments.sort((a, b) => 
+                  this.payments = payments.sort((a, b) =>
                     new Date(b.date).getTime() - new Date(a.date).getTime()
                   );
                 },
@@ -642,21 +665,38 @@ export class MyProfileComponent implements OnInit {
         const userId = parsedToken.myAuthInfo.userId;
         const token = parsedToken.token;
 
-        this.http.get<Review[]>(`${this.apiUrl}/Review/GetByUser/${userId}`, {
+        this.http.get<Review[]>(`${this.apiUrl}/Review/Get`, {
           headers: { 'my-auth-token': token }
         }).subscribe({
           next: (reviews) => {
-            // For each review, fetch apartment details
-            reviews.forEach(review => {
+            const userReviews = reviews.filter(r => r.accountID === userId);
+
+            const reviewsWithApartments: Review[] = [];
+
+            userReviews.forEach(review => {
               this.http.get<Apartment>(`${this.apiUrl}/Apartment/GetById/${review.apartmentId}`, {
                 headers: { 'my-auth-token': token }
               }).subscribe({
                 next: (apartment) => {
-                  review.apartment = apartment;
+                  reviewsWithApartments.push({
+                    ...review,
+                    apartment: apartment
+                  });
+
+                  this.reviews = reviewsWithApartments.sort((a, b) =>
+                    new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+                  );
+                },
+                error: (error) => {
+                  console.error('Error loading apartment for review:', error);
+                  this.errorMessage = 'Failed to load apartment details';
                 }
               });
             });
-            this.reviews = reviews;
+
+            if (userReviews.length === 0) {
+              this.reviews = [];
+            }
           },
           error: (error) => {
             console.error('Error loading reviews:', error);
@@ -667,8 +707,12 @@ export class MyProfileComponent implements OnInit {
         console.error('Error parsing auth token:', error);
         this.errorMessage = 'Invalid authentication token';
       }
+    } else {
+      this.errorMessage = 'No authentication token found';
     }
   }
+
+
 
   editReview(reviewId: number) {
     // Implement edit functionality
