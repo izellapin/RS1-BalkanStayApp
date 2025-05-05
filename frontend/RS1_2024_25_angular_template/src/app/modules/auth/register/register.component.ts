@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router';
-import {MyAuthService, RegisterRequest } from '../../../services/auth-services/my-auth.service';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { MyAuthService, RegisterRequest } from '../../../services/auth-services/my-auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -10,13 +10,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './register.component.css',
   standalone: false
 })
-
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
 
-  constructor(private router: Router, private authService: MyAuthService, private fb: FormBuilder)
-  {
+  constructor(
+    private router: Router,
+    private authService: MyAuthService,
+    private fb: FormBuilder,
+    private translate: TranslateService
+  ) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -31,18 +34,17 @@ export class RegisterComponent {
 
     const registerData: RegisterRequest = this.registerForm.value;
 
-    console.log(registerData)
-
     this.authService.register(registerData).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
         this.router.navigateByUrl('/auth/login');
       },
       error: (error) => {
-        this.errorMessage = error.message;
+        // Pokušaj prevesti poruku ako postoji ključ
+        this.translate.get('REGISTER.ERROR').subscribe(translated => {
+          this.errorMessage = translated || error.message;
+        });
       }
     });
-
   }
-
 }

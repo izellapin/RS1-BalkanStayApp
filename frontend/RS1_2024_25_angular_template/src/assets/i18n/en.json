@@ -1,0 +1,15 @@
+{
+  "REGISTER": {
+    "TITLE": "Register",
+    "FIRST_NAME": "First Name",
+    "LAST_NAME": "Last Name",
+    "USERNAME": "Username",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "INVALID_EMAIL": "Invalid email",
+    "INVALID_PASSWORD": "Password must be at least 6 characters",
+    "BUTTON": "Register",
+    "ALREADY_HAVE_ACCOUNT": "Already have an account?",
+    "SIGN_IN": "Sign in"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "REGISTER": {
+    "TITLE": "Registracija",
+    "FIRST_NAME": "Ime",
+    "LAST_NAME": "Prezime",
+    "USERNAME": "Korisničko ime",
+    "EMAIL": "Email",
+    "PASSWORD": "Lozinka",
+    "INVALID_EMAIL": "Neispravan email",
+    "INVALID_PASSWORD": "Lozinka mora imati najmanje 6 znakova",
+    "BUTTON": "Registruj se",
+    "ALREADY_HAVE_ACCOUNT": "Već imate nalog?",
+    "SIGN_IN": "Prijavi se"
+  }
+}

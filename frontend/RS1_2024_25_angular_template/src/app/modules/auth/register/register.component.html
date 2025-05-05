@@ -1,57 +1,58 @@
 <app-header></app-header>
 <div class="login-container">
 
-
-  <h2>Register</h2>
+  <h2>{{ 'REGISTER.TITLE' | translate }}</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
     <div class="form-group">
       <div class="input-container">
         <input type="text" id="firstName" formControlName="firstName" required>
-        <label for="firstName">First Name</label>
+        <label for="firstName">{{ 'REGISTER.FIRST_NAME' | translate }}</label>
       </div>
     </div>
 
     <div class="form-group">
       <div class="input-container">
         <input type="text" id="lastName" formControlName="lastName" required>
-        <label for="lastName">Last Name</label>
+        <label for="lastName">{{ 'REGISTER.LAST_NAME' | translate }}</label>
       </div>
     </div>
 
     <div class="form-group">
       <div class="input-container">
         <input type="text" id="userName" formControlName="userName" required>
-        <label for="userName">Username</label>
+        <label for="userName">{{ 'REGISTER.USERNAME' | translate }}</label>
       </div>
     </div>
 
     <div class="form-group">
       <div class="input-container">
         <input type="email" id="email" formControlName="email" required>
-        <label for="email">Email</label>
+        <label for="email">{{ 'REGISTER.EMAIL' | translate }}</label>
       </div>
       <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-        <p class="error-message">Invalid email</p>
+        <p class="error-message">{{ 'REGISTER.INVALID_EMAIL' | translate }}</p>
       </div>
     </div>
 
     <div class="form-group">
       <div class="input-container">
         <input type="password" id="password" formControlName="password" required>
-        <label for="password">Password</label>
+        <label for="password">{{ 'REGISTER.PASSWORD' | translate }}</label>
       </div>
       <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-        <p class="error-message">Password must be at least 6 characters</p>
+        <p class="error-message">{{ 'REGISTER.INVALID_PASSWORD' | translate }}</p>
       </div>
     </div>
 
-    <button class="login-button" type="submit" [disabled]="registerForm.invalid">Register</button>
+    <button class="login-button" type="submit" [disabled]="registerForm.invalid">
+      {{ 'REGISTER.BUTTON' | translate }}
+    </button>
 
     <p *ngIf="errorMessage" class="message error-message">{{ errorMessage }}</p>
 
     <div class="login-links">
-      <span>Already have an account? <a routerLink="/auth/login">Sign in</a></span>
+      <span>{{ 'REGISTER.ALREADY_HAVE_ACCOUNT' | translate }} <a routerLink="/auth/login">{{ 'REGISTER.SIGN_IN' | translate }}</a></span>
     </div>
   </form>
 </div>
