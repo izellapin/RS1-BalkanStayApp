@@ -14,6 +14,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
 
+  currentLang: string = localStorage.getItem('lang') || 'en';
+
   constructor(
     private router: Router,
     private authService: MyAuthService,
@@ -47,4 +49,11 @@ export class RegisterComponent {
       }
     });
   }
+
+  changeLanguage(lang: string): void {
+    this.translate.use(lang);
+    this.currentLang = lang;
+    localStorage.setItem('lang', lang);
+  }
+
 }

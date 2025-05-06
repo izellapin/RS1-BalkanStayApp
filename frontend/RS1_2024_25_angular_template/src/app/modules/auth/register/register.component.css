@@ -105,3 +105,41 @@ h2 {
   display: block;
   margin-top: 5px;
 }
+
+
+.language-switcher-inside {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  gap: 6px;
+}
+
+.language-switcher-inside button {
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #1a2e35;
+  border: 1px solid #ccc;
+  background-color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.language-switcher-inside button.active {
+  background-color: #1a2e35;
+  color: white;
+  border-color: #1a2e35;
+}
+
+.language-switcher-inside button:hover:not(.active) {
+  background-color: #f1f1f1;
+  border-color: #bbb;
+}
+
+
+.language-switcher-inside button:hover {
+  background-color: #f0f0f0;
+  border-color: #c5c5c5;
+}
+

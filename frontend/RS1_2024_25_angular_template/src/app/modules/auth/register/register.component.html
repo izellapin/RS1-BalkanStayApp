@@ -1,5 +1,16 @@
 <app-header></app-header>
+
 <div class="login-container">
+
+  <div class="language-switcher-inside">
+    <button
+      [ngClass]="{ 'active': currentLang === 'en' }"
+      (click)="changeLanguage('en')">EN</button>
+    <button
+      [ngClass]="{ 'active': currentLang === 'bhs' }"
+      (click)="changeLanguage('bhs')">BHS</button>
+  </div>
+
 
   <h2>{{ 'REGISTER.TITLE' | translate }}</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
